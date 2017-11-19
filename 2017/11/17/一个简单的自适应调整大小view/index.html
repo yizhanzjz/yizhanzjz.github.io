@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/auto_adjust_text_size_0.png">
 <meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/auto_adjust_text_size_1.png">
-<meta property="og:updated_time" content="2017-11-19T09:02:45.128Z">
+<meta property="og:updated_time" content="2017-11-19T09:25:14.391Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个简单的自适应调整字体大小view">
 <meta name="twitter:description" content="最近在项目中遇到一个这样的需求：一个显示金额的view，给定最大的字号，需根据view的宽高使金额字体显示地尽量大、务必完整，且小数位要比整数位小几个字号。　　基本的分析思路是这样的：金额其实也就是文本，画文本Canvas有drawText方法可以使用；不同字号的字体，通过调用Paint的setTextSize方法传入不同的参数可以实现；而怎么才能使文本字体尽量大呢？　　之前在学自定义控件的时">
@@ -189,7 +189,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -199,7 +199,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -263,7 +263,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-17T21:02:53+08:00">
                 2017-11-17
@@ -365,7 +365,7 @@
 <p>　　　　这里比较难理解的一点应该是，在指定(x,y)中的y坐标时使用的是<code>(mHeight - fontMetrics.top - fontMetrics.bottom) / 2</code>。如果想具体了解可查阅与getFontMetircs方法相关的资料，不想查可以记住，因为这种写法在使字体垂直居中时具有通用性。这个y值通俗来讲，通俗来讲，就是字体在控件中居中时基线的y坐标值。</p>
 <h4 id="最终的效果"><a href="#最终的效果" class="headerlink" title="最终的效果"></a>最终的效果</h4><p>　　宽：150dp、高：100dp、diffTextSizeScale：0.618、maxTextSize：60：<br><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/auto_adjust_text_size_0.png" alt=""><br>　　宽：150dp、高：100dp、diffTextSizeScale：0.618、maxTextSize：20：<br><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/auto_adjust_text_size_1.png" alt=""></p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>　　其实核心代码很简单的，第一次写博客，个人感觉写的有些啰嗦吧，有待提高。有问题的话，多多指教。</p>
-
+<h5 id="源码地址：https-github-com-yizhanzjz-AutoAdjustSizeText"><a href="#源码地址：https-github-com-yizhanzjz-AutoAdjustSizeText" class="headerlink" title="源码地址：https://github.com/yizhanzjz/AutoAdjustSizeText"></a>源码地址：<a href="https://github.com/yizhanzjz/AutoAdjustSizeText" target="_blank" rel="noopener">https://github.com/yizhanzjz/AutoAdjustSizeText</a></h5>
       
     </div>
     
@@ -446,10 +446,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Inhaltsverzeichnis
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Übersicht
+            Overview
           </li>
         </ul>
       
@@ -470,7 +470,7 @@
                 <a href="/archives/">
               
                   <span class="site-state-item-count">1</span>
-                  <span class="site-state-item-name">Artikel</span>
+                  <span class="site-state-item-name">posts</span>
                 </a>
               </div>
             
@@ -483,7 +483,7 @@
               <div class="site-state-item site-state-tags">
                 
                   <span class="site-state-item-count">1</span>
-                  <span class="site-state-item-name">Tags</span>
+                  <span class="site-state-item-name">tags</span>
                 
               </div>
             
@@ -517,7 +517,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-自定义属性"><span class="nav-number">1.</span> <span class="nav-text">1. 自定义属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-设置Paint"><span class="nav-number">2.</span> <span class="nav-text">2. 设置Paint</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-获取当前控件的宽高"><span class="nav-number">3.</span> <span class="nav-text">3. 获取当前控件的宽高</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-在onDraw方法里递归出最合适的textSize并垂直居中画出Text"><span class="nav-number">4.</span> <span class="nav-text">4. 在onDraw方法里递归出最合适的textSize并垂直居中画出Text</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最终的效果"><span class="nav-number">5.</span> <span class="nav-text">最终的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-自定义属性"><span class="nav-number">1.</span> <span class="nav-text">1. 自定义属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-设置Paint"><span class="nav-number">2.</span> <span class="nav-text">2. 设置Paint</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-获取当前控件的宽高"><span class="nav-number">3.</span> <span class="nav-text">3. 获取当前控件的宽高</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-在onDraw方法里递归出最合适的textSize并垂直居中画出Text"><span class="nav-number">4.</span> <span class="nav-text">4. 在onDraw方法里递归出最合适的textSize并垂直居中画出Text</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最终的效果"><span class="nav-number">5.</span> <span class="nav-text">最终的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#源码地址：https-github-com-yizhanzjz-AutoAdjustSizeText"><span class="nav-number">6.1.</span> <span class="nav-text">源码地址：https://github.com/yizhanzjz/AutoAdjustSizeText</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -547,7 +547,7 @@
 </div>
 
 
-  <div class="powered-by">Erstellt mit  <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
 
 
 
