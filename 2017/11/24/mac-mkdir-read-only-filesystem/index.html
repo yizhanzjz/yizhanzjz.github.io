@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="record and share">
-<meta property="og:type" content="website">
-<meta property="og:title" content="yizhanzjz&#39;s blogs">
-<meta property="og:url" content="http://yizhanzjz.com/index.html">
+<meta name="description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mac mkdir read-only filesystem">
+<meta property="og:url" content="http://yizhanzjz.com/2017/11/24/mac-mkdir-read-only-filesystem/index.html">
 <meta property="og:site_name" content="yizhanzjz&#39;s blogs">
-<meta property="og:description" content="record and share">
+<meta property="og:description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。 找到了一篇在mac下编译androi">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-24T06:19:13.594Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="yizhanzjz&#39;s blogs">
-<meta name="twitter:description" content="record and share">
+<meta name="twitter:title" content="mac mkdir read-only filesystem">
+<meta name="twitter:description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。 找到了一篇在mac下编译androi">
 
 
 
@@ -118,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yizhanzjz.com/"/>
+  <link rel="canonical" href="http://yizhanzjz.com/2017/11/24/mac-mkdir-read-only-filesystem/"/>
 
 
 
 
 
-  <title>yizhanzjz's blogs</title>
+  <title>mac mkdir read-only filesystem | yizhanzjz's blogs</title>
   
 
 
@@ -143,8 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -217,9 +217,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -249,9 +249,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/24/mac-mkdir-read-only-filesystem/" itemprop="url">mac mkdir read-only filesystem</a></h1>
+          <h1 class="post-title" itemprop="name headline">mac mkdir read-only filesystem</h1>
         
 
         <div class="post-meta">
@@ -301,18 +299,20 @@
       
 
       
-        
-          
-          最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/11/24/mac-mkdir-read-only-filesystem/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+        <p>最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。</p>
+<p>找到了一篇在mac下编译android源码的<a href="http://www.jianshu.com/p/ee84e456ed51" target="_blank" rel="noopener">文章</a>，按照所写内容一步一步操作，在使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil create -type SPARSE -fs &apos;Case-sensitive Journaled HFS+&apos; -size 40g ~/android.dmg</span><br></pre></td></tr></table></figure>
+<p>创建了磁盘映像并使用命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil attach ~/android.dmg -mountpoint /Volumes/android;</span><br></pre></td></tr></table></figure></p>
+<p>装载之后，却并不能在装载后的目录/Volumes/android下创建目录，即mkdir XXX时报了一个错，大致意思是这个磁盘映像是一个“read-only filesystem”，不能够创建目录或文件。</p>
+<p>首先，想着可能是权限不够吧，就在mkdir前面加一个sudo再次执行，并没有什么卵用，仍旧报“read-only filesystem”</p>
+<p>之后，尝试把/Volumes/android的目录权限修改为可读写的，切换到/Volumes目录下，执行”chmod a+w android”，仍旧报“read-only filesystem”</p>
+<p>后来，去网上搜索一些相关资料，找到了尊重的解决方法：在用户主目录下执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil convert android.dmg.sparseimage -format UDRW -o android.dmg.sparseimage</span><br></pre></td></tr></table></figure></p>
+<p>试过之后，可读写了，问题解决</p>
+<h4 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a><strong>参考资料：</strong></h4><ul>
+<li><a href="https://superuser.com/questions/146045/how-to-write-to-a-mac-osx-read-only-filesystem" target="_blank" rel="noopener">How to write to a Mac OSX read-only filesystem?</a>，在这个链接里找到磁盘映像转换格式的convert命令</li>
+<li><a href="https://www.cnblogs.com/wwl188/p/5612505.html" target="_blank" rel="noopener">Mac OS X 中一些常用的命令行技巧</a>，在这个链接里找到-format后面的可选项，UDRW表示可读写格式</li>
+</ul>
+
       
     </div>
     
@@ -329,142 +329,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/11/20/java-synchronized的初步理解/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yizhanzjz">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yizhanzjz's blogs">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/20/java-synchronized的初步理解/" itemprop="url">java synchronized的初步理解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-20T16:52:38+08:00">
-                2017-11-20
-              </time>
+              <a href="/2017/11/20/java-synchronized的初步理解/" rel="next" title="java synchronized的初步理解">
+                <i class="fa fa-chevron-left"></i> java synchronized的初步理解
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-          本博客每一个小标题下的内容独立且完整，如只是想了解某个小标题下的内容，只需前往看该小标题即可。
-
-1. 多线程并发访问同一个对象的同一个非静态synchronized方法
-2. 多线程并发访问同一个对象的不同非静态synchronized方法
-3. 多线程并发访问同一个对象的不同方法，一个是非静态s
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/11/20/java-synchronized的初步理解/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -474,136 +360,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/11/17/一个简单的自适应调整大小view/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yizhanzjz">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yizhanzjz's blogs">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/17/一个简单的自适应调整大小view/" itemprop="url">一个简单的自适应调整字体大小view</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-17T21:02:53+08:00">
-                2017-11-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          　　最近在项目中遇到一个这样的需求：一个显示金额的view，给定最大的字号，需根据view的宽高使金额字体显示地尽量大、务必完整，且小数位要比整数位小几个字号。　　基本的分析思路是这样的：金额其实也就是文本，画文本Canvas有drawText方法可以使用；不同字号的字体，通过调用Paint的set
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/11/17/一个简单的自适应调整大小view/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -611,6 +372,15 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -631,8 +401,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -685,6 +464,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考资料："><span class="nav-number">1.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -818,6 +613,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
 
   
 
@@ -843,6 +642,10 @@
   
     
 
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149085"></script>
+      <!-- UY END -->
     
   
 
