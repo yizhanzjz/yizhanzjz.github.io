@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言&amp;ensp;&amp;ensp;&amp;ensp;&amp;ensp;最近在看android源码中Window的内容，在看到WindowManagerImpl创建对象时发现了SystemServiceRegistry，这个类主要是用来缓存、注册、获取系统服务的。因为对它的缓存机制比较感兴趣，所以就研究下它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android笔记之SystemServiceRegistry">
+<meta property="og:url" content="http://yizhanzjz.com/2017/11/29/android笔记之SystemServiceRegistry/index.html">
+<meta property="og:site_name" content="yizhanzjz&#39;s blogs">
+<meta property="og:description" content="前言&amp;ensp;&amp;ensp;&amp;ensp;&amp;ensp;最近在看android源码中Window的内容，在看到WindowManagerImpl创建对象时发现了SystemServiceRegistry，这个类主要是用来缓存、注册、获取系统服务的。因为对它的缓存机制比较感兴趣，所以就研究下它的源码并记录下来，以便以后回顾迭代。 1. SystemServiceRegistry刚被导入内存时的分析&amp;en">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T09:21:42.564Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android笔记之SystemServiceRegistry">
+<meta name="twitter:description" content="前言&amp;ensp;&amp;ensp;&amp;ensp;&amp;ensp;最近在看android源码中Window的内容，在看到WindowManagerImpl创建对象时发现了SystemServiceRegistry，这个类主要是用来缓存、注册、获取系统服务的。因为对它的缓存机制比较感兴趣，所以就研究下它的源码并记录下来，以便以后回顾迭代。 1. SystemServiceRegistry刚被导入内存时的分析&amp;en">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yizhanzjz.com/2017/11/29/android笔记之SystemServiceRegistry/"/>
+
+
+
+
+
+  <title>android笔记之SystemServiceRegistry | yizhanzjz's blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yizhanzjz's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">study.practise.years of it.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/11/29/android笔记之SystemServiceRegistry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yizhanzjz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yizhanzjz's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">android笔记之SystemServiceRegistry</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-29T17:20:52+08:00">
+                2017-11-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>&ensp;&ensp;&ensp;&ensp;最近在看android源码中Window的内容，在看到WindowManagerImpl创建对象时发现了SystemServiceRegistry，这个类主要是用来缓存、注册、获取系统服务的。因为对它的缓存机制比较感兴趣，所以就研究下它的源码并记录下来，以便以后回顾迭代。</p>
+<h4 id="1-SystemServiceRegistry刚被导入内存时的分析"><a href="#1-SystemServiceRegistry刚被导入内存时的分析" class="headerlink" title="1. SystemServiceRegistry刚被导入内存时的分析"></a>1. SystemServiceRegistry刚被导入内存时的分析</h4><p>&ensp;&ensp;&ensp;&ensp;先来看一段源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">package android.app;</span><br><span class="line">final class SystemServiceRegistry &#123;</span><br><span class="line"></span><br><span class="line">    //用来保存所有Service的名字</span><br><span class="line">    private static final HashMap&lt;Class&lt;?&gt;, String&gt; SYSTEM_SERVICE_NAMES =</span><br><span class="line">            new HashMap&lt;Class&lt;?&gt;, String&gt;();</span><br><span class="line">    //用来保存所有的ServiceFetcher，后面会拿出ServiceFetcher源码来说</span><br><span class="line">    //现在只要知道它是从缓存中拿Service，缓存中没有就创建Service就可以了</span><br><span class="line">    private static final HashMap&lt;String, ServiceFetcher&lt;?&gt;&gt; SYSTEM_SERVICE_FETCHERS =</span><br><span class="line">            new HashMap&lt;String, ServiceFetcher&lt;?&gt;&gt;();</span><br><span class="line">    //记录缓存的大小</span><br><span class="line">    private static int sServiceCacheSize;</span><br><span class="line">    </span><br><span class="line">    //注意构造方法是private的</span><br><span class="line">    private SystemServiceRegistry() &#123; &#125;</span><br><span class="line">    </span><br><span class="line">    static&#123;</span><br><span class="line">        </span><br><span class="line">        //注册服务代码</span><br><span class="line">        registerService(Context.ACCESSIBILITY_SERVICE, AccessibilityManager.class,</span><br><span class="line">                new CachedServiceFetcher&lt;AccessibilityManager&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public AccessibilityManager createService(ContextImpl ctx) &#123;</span><br><span class="line">                return AccessibilityManager.getInstance(ctx);</span><br><span class="line">            &#125;&#125;);</span><br><span class="line">        </span><br><span class="line">        //注册服务代码</span><br><span class="line">        registerService(Context.CAPTIONING_SERVICE, CaptioningManager.class,</span><br><span class="line">                new CachedServiceFetcher&lt;CaptioningManager&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public CaptioningManager createService(ContextImpl ctx) &#123;</span><br><span class="line">                return new CaptioningManager(ctx);</span><br><span class="line">            &#125;&#125;);</span><br><span class="line">        ...//大量类似的注册服务代码</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;在SystemServiceRegistry类刚被导入内存时，这些静态字段就会被初始化、静态字段就会被执行。SYSTEM_SERVICE_NAMES、SYSTEM_SERVICE_FETCHERS这两个字段不仅是静态的，还是final的，这说明这俩字段被初始化之后，对象就不能更改了但可以增删元素（因为是HashMap）。这两个字段，分别用来存储Service名字和获取Service实例的Fetcher对象的。</p>
+<p>&ensp;&ensp;&ensp;&ensp;SystemServiceRegistry的构造方法是私有的，说明它不能在类外创建对象，看一下该构造方法在类内的调用，发现也没有调用，这说明SystemServiceRegistry是不允许创建对象的。再看一下该类的其它方法和字段，发现都是静态的，这就可以确定SystemServiceRegistry类是被当做Util来使用的，并且不允许创建该类的实例。</p>
+<p>&ensp;&ensp;&ensp;&ensp;static代码块中大量调用了registerService方法，那就结合registerService方法的调用和声明来看一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">static&#123;</span><br><span class="line">    ...</span><br><span class="line">    //registerService的调用</span><br><span class="line">    registerService(Context.WINDOW_SERVICE, WindowManager.class,</span><br><span class="line">                new CachedServiceFetcher&lt;WindowManager&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public WindowManager createService(ContextImpl ctx) &#123;</span><br><span class="line">                return new WindowManagerImpl(ctx);</span><br><span class="line">            &#125;&#125;);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">//registerService的声明</span><br><span class="line">private static &lt;T&gt; void registerService(String serviceName, Class&lt;T&gt; serviceClass,</span><br><span class="line">            ServiceFetcher&lt;T&gt; serviceFetcher) &#123;</span><br><span class="line">    SYSTEM_SERVICE_NAMES.put(serviceClass, serviceName);</span><br><span class="line">    SYSTEM_SERVICE_FETCHERS.put(serviceName, serviceFetcher);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;先看一下registerService方法声明的参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>serviceName</td>
+<td>service的名字，比如Context.WINDOW_SERVICE</td>
+</tr>
+<tr>
+<td>serviceClass</td>
+<td>该Service对象的Class类，比如WindowManager.class</td>
+</tr>
+<tr>
+<td>serviceFetcher</td>
+<td>ServiceFetcher对象</td>
+</tr>
+</tbody>
+</table>
+<p>&ensp;&ensp;&ensp;&ensp;registerService方法内的逻辑很简单，就是以serviceClass为key将serviceName存储到SYSTEM_SERVICE_NAMES这个HashMap中，以serviceName为key将ServiceFetcher对象对象存储到SYSTEM_SERVICE_FETCHERS这个HaspMap中。</p>
+<p>&ensp;&ensp;&ensp;&ensp;下面看一下，ServiceFetcher的声明及其实现类CachedServiceFetcher。如上述代码所示，registerService方法被调用时传入的第三个参数即为CachedServiceFetcher的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">package android.app;</span><br><span class="line">final class SystemServiceRegistry &#123;</span><br><span class="line">    ...</span><br><span class="line">    private static int sServiceCacheSize;</span><br><span class="line">    ...</span><br><span class="line">    static abstract interface ServiceFetcher&lt;T&gt; &#123;</span><br><span class="line">        T getService(ContextImpl ctx);</span><br><span class="line">    &#125;</span><br><span class="line">    static abstract class CachedServiceFetcher&lt;T&gt; implements ServiceFetcher&lt;T&gt; &#123;</span><br><span class="line">        private final int mCacheIndex;</span><br><span class="line"></span><br><span class="line">        public CachedServiceFetcher() &#123;</span><br><span class="line">            mCacheIndex = sServiceCacheSize++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">        public final T getService(ContextImpl ctx) &#123;</span><br><span class="line">            final Object[] cache = ctx.mServiceCache;</span><br><span class="line">            synchronized (cache) &#123;</span><br><span class="line">                // Fetch or create the service.</span><br><span class="line">                Object service = cache[mCacheIndex];</span><br><span class="line">                if (service == null) &#123;</span><br><span class="line">                    service = createService(ctx);</span><br><span class="line">                    cache[mCacheIndex] = service;</span><br><span class="line">                &#125;</span><br><span class="line">                return (T)service;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public abstract T createService(ContextImpl ctx);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&ensp;&ensp;&ensp;&ensp;从代码结构来看，ServiceFetcher为SystemServiceRegistry类的静态内部接口，定义了getService方法；CachedServiceFetcher为SystemServiceRegistry类的抽象静态内部类，实现ServiceFetcher接口并实现其定义方法getService方法。</p>
+<p>&ensp;&ensp;&ensp;&ensp;另外，CachedServiceFetcher的构造方法被调用时会将此时SystemServiceRegistry类中静态成员变量sServiceCacheSize的值赋给其final的成员变量mCacheIndex，然后sServiceCacheSize加1。结合上述static代码块中大量调用registerService方法时大量new CachedServiceFetcher对象作为第三个参数可知，SystemServiceRegistry类中静态成员变量sServiceCacheSize其实就是用来记录static代码块中注册了多少个服务的。同时还保证了每一个注册的服务都有一个唯一的下标mCacheIndex（与其他注册服务的下标不同）记录在ServiceFetcher对象内。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">说一个小知识点：类的成员final非静态变量如果未初始化，那其实是可以在该类的构造方法初始化的。比如说，这里的mCacheIndex。</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;SystemServiceRegistry类被导入内存时，能执行到的差不多就是如上所说了：静态成员变量的初始化，静态代码块以及静态代码块中执行到的registerService方法和给registerService传递参数时执行到的CachedServiceFetcher类的构造方法。</p>
+<p>&ensp;&ensp;&ensp;&ensp;SystemServiceRegistry类一般只会导入内存一次，然后就留在内存里了。这样就保证了static代码块只会执行一次，注册各个服务也只各执行一次，获取服务的ServiceFetcher对象也是一个服务对应一个。</p>
+<h4 id="2-使用SystemServiceRegistry提供的方法创建缓存并获取服务"><a href="#2-使用SystemServiceRegistry提供的方法创建缓存并获取服务" class="headerlink" title="2. 使用SystemServiceRegistry提供的方法创建缓存并获取服务"></a>2. 使用SystemServiceRegistry提供的方法创建缓存并获取服务</h4><p>&ensp;&ensp;&ensp;&ensp;通过上述对registerService方法功能的分析可知，SystemServiceRegistry存储下来的只是service名字和获取该service的ServiceFetcher对象，并没有直接存储该Service实现类的对象。那SystemServiceRegistry的缓存是在什么时候创建的？Service实现类的对象又是什么创建并存入到缓存的呢？</p>
+<h5 id="ensp-ensp-ensp-ensp-1-创建缓存"><a href="#ensp-ensp-ensp-ensp-1-创建缓存" class="headerlink" title="&ensp;&ensp;&ensp;&ensp;1. 创建缓存"></a>&ensp;&ensp;&ensp;&ensp;1. 创建缓存</h5><p>&ensp;&ensp;&ensp;&ensp;SystemServiceRegistry类的方法并不多，public修饰可被外界调用的也只有3个而已：createServiceCache、getSystemService、getSystemServiceName。根据方法名就很快找到了创建缓存的方法createServiceCache，下面具体看一下这个方法的声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static Object[] createServiceCache() &#123;</span><br><span class="line">    return new Object[sServiceCacheSize];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;超级简单的一个方法，就创建了一个Object数组而已。上面已经解释了sServiceCacheSize的作用是记录注册的所有服务的个数，而此处使用sServiceCacheSize来作为缓存数组的长度。</p>
+<p>&ensp;&ensp;&ensp;&ensp;关于创建缓存还有一点要说的，查看createServiceCache方法被调用的地方，发现它只在初始化ContextImpl的一个成员变量时被调用了,其它地方没调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">package android.app;</span><br><span class="line">class ContextImpl extends Context &#123;</span><br><span class="line">    ...</span><br><span class="line">    final Object[] mServiceCache = SystemServiceRegistry.createServiceCache();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;从这里就可以看出，SystemServiceRegistry类中的缓存对象并没有设置到SystemServiceRegistry类中，而是存储到了另一个类ContextImpl的成员变量上了。这个跟ThreadLocal中的静态内部类ThreadLocalMap的实例对象并没有设置在ThreadLocal类中，而是设置在了Thread类的成员变量上多多少少有些相似。</p>
+<h5 id="ensp-ensp-ensp-ensp-2-获取Service实例"><a href="#ensp-ensp-ensp-ensp-2-获取Service实例" class="headerlink" title="&ensp;&ensp;&ensp;&ensp;2. 获取Service实例"></a>&ensp;&ensp;&ensp;&ensp;2. 获取Service实例</h5><p>&ensp;&ensp;&ensp;&ensp;上面说了，SystemServiceRegistry中可被外界调用的public方法很少，只有3个。上面说了用来创建缓存数组的createServiceCache方法，下面说一下用来获取Service实例的getSystemService方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static Object getSystemService(ContextImpl ctx, String name) &#123;</span><br><span class="line">    ServiceFetcher&lt;?&gt; fetcher = SYSTEM_SERVICE_FETCHERS.get(name);</span><br><span class="line">    return fetcher != null ? fetcher.getService(ctx) : null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;也是超级简单的一个方法，从SystemServiceRegistry的静态且final的hashmap（SYSTEM_SERVICE_FETCHERS）中取出ServiceFetcher对象（ServiceFetcher对象在SystemServiceRegistry类被导入内存执行static代码块时已被初始化），然后调用其getService方法来获取Service实例。下面来看一下ServiceFetcher的实现类CachedServiceFetcher中的getService方法（CachedServiceFetcher类上面已经贴过，这里只贴出其方法getService）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">public final T getService(ContextImpl ctx) &#123;</span><br><span class="line">    //从ContextImpl对象中获得缓存数组</span><br><span class="line">    final Object[] cache = ctx.mServiceCache;</span><br><span class="line">    //某个线程正在获取Service，其他获取Service线程在这里阻塞</span><br><span class="line">    synchronized (cache) &#123;</span><br><span class="line">        //一个下标对应一个Service，从缓存数组中获取该下标下的Service</span><br><span class="line">        Object service = cache[mCacheIndex];</span><br><span class="line">        //如果缓存数组中还没有Service就要去创建，创建好后保存到缓存数组的相应下标下</span><br><span class="line">        if (service == null) &#123;</span><br><span class="line">            service = createService(ctx);</span><br><span class="line">            cache[mCacheIndex] = service;</span><br><span class="line">        &#125;</span><br><span class="line">        //返回该服务</span><br><span class="line">        return (T)service;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public abstract T createService(ContextImpl ctx);</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;这个getService的逻辑基本就是缓存数组中获取不到该服务就先去创建该服务，创建好后将该服务存储到缓存数组中并返回该服务。下面看一下CachedServiceFetcher类中的createService方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">static abstract class CachedServiceFetcher&lt;T&gt; implements ServiceFetcher&lt;T&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">    public abstract T createService(ContextImpl ctx);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;该方法是抽象的，那该方法的具体实现在哪儿呢？其实在上述的static代码中new CachedServiceFetcher对象时在后面的大括号中已经实现了createService方法。比如静态代码块中注册窗口服务时是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">registerService(Context.WINDOW_SERVICE, WindowManager.class,</span><br><span class="line">                new CachedServiceFetcher&lt;WindowManager&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public WindowManager createService(ContextImpl ctx) &#123;</span><br><span class="line">        return new WindowManagerImpl(ctx);</span><br><span class="line">    &#125;&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>&ensp;&ensp;&ensp;&ensp;到此已经通过获取了Service实例。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&ensp;&ensp;&ensp;&ensp;这里作一个总结，以便对SystemServiceRegistry有一个整体的印象：</p>
+<ul>
+<li>SystemServiceRegistry类中ServiceFetcher对象是复用的，不同的ContextImpl对象获取相同的Service实例使用的同一个ServiceFetcher对象；</li>
+<li>对Service缓存的数组是记录在ContextImpl中的，不同的ContextImpl对象缓存数组不同。</li>
+<li>Service缓存数组初始大小即为要注册的所有服务的个数，但数组每个位置上的Service实例均为空。只有在调用SystemServiceRegistry的getSystemService方法时发现没这个Service实例才会去创建这个Service实例，并存储到缓存数组中，保证再次调用getSystemService方法时返回缓存数组中的该实例；</li>
+<li>SystemServiceRegistry这种缓存机制的好处在于，不同ContextImpl对象使用不同的缓存数组，但不同的缓存数组获取相同的Service实例可以复用同一个ServiceFetcher对象；只在需要获取Service实例时才会去创建该Service实例，并保证以后需要时返回缓存中的该实例。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/28/android笔记之Window/" rel="next" title="android笔记之Window">
+                <i class="fa fa-chevron-left"></i> android笔记之Window
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">yizhanzjz</p>
+              <p class="site-description motion-element" itemprop="description">record and share</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">Artikel</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">Tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-SystemServiceRegistry刚被导入内存时的分析"><span class="nav-number">2.</span> <span class="nav-text">1. SystemServiceRegistry刚被导入内存时的分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用SystemServiceRegistry提供的方法创建缓存并获取服务"><span class="nav-number">3.</span> <span class="nav-text">2. 使用SystemServiceRegistry提供的方法创建缓存并获取服务</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ensp-ensp-ensp-ensp-1-创建缓存"><span class="nav-number">3.1.</span> <span class="nav-text">    1. 创建缓存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ensp-ensp-ensp-ensp-2-获取Service实例"><span class="nav-number">3.2.</span> <span class="nav-text">    2. 获取Service实例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yizhanzjz</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Erstellt mit  <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149085"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
