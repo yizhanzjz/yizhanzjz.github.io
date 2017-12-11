@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言&amp;emsp;&amp;emsp;最近这段时间，项目中有通过蒙版作功能说明的需求，看了UI效果图后，最终决定使用DialogFragment+自定义view来实现。我尽量封装的好一些，这样调用起来就会比较方便。 最终实现效果 &amp;emsp;&amp;emsp;最终实现效果如上：点击标题栏右上角图片显示蒙">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个简单的蒙版制作">
+<meta property="og:url" content="http://yizhanzjz.com/2017/12/11/一个简单的蒙版制作/index.html">
+<meta property="og:site_name" content="yizhanzjz&#39;s blogs">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;最近这段时间，项目中有通过蒙版作功能说明的需求，看了UI效果图后，最终决定使用DialogFragment+自定义view来实现。我尽量封装的好一些，这样调用起来就会比较方便。 最终实现效果 &amp;emsp;&amp;emsp;最终实现效果如上：点击标题栏右上角图片显示蒙版的第一个内容，点击蒙版显示蒙版的第二个内容，再点击蒙版蒙版消失。 核心思路及代码实现&amp;emsp;&amp;emsp;什">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/mask.gif">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/mask_pic.png">
+<meta property="og:updated_time" content="2017-12-11T08:40:05.734Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个简单的蒙版制作">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;最近这段时间，项目中有通过蒙版作功能说明的需求，看了UI效果图后，最终决定使用DialogFragment+自定义view来实现。我尽量封装的好一些，这样调用起来就会比较方便。 最终实现效果 &amp;emsp;&amp;emsp;最终实现效果如上：点击标题栏右上角图片显示蒙版的第一个内容，点击蒙版显示蒙版的第二个内容，再点击蒙版蒙版消失。 核心思路及代码实现&amp;emsp;&amp;emsp;什">
+<meta name="twitter:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/mask.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yizhanzjz.com/2017/12/11/一个简单的蒙版制作/"/>
+
+
+
+
+
+  <title>一个简单的蒙版制作 | yizhanzjz's blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yizhanzjz's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">study.practise.years of it.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/12/11/一个简单的蒙版制作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yizhanzjz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yizhanzjz's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个简单的蒙版制作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-11T16:39:33+08:00">
+                2017-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>&emsp;&emsp;最近这段时间，项目中有通过蒙版作功能说明的需求，看了UI效果图后，最终决定使用DialogFragment+自定义view来实现。我尽量封装的好一些，这样调用起来就会比较方便。</p>
+<h3 id="最终实现效果"><a href="#最终实现效果" class="headerlink" title="最终实现效果"></a>最终实现效果</h3><p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/mask.gif" alt=""></p>
+<p>&emsp;&emsp;最终实现效果如上：点击标题栏右上角图片显示蒙版的第一个内容，点击蒙版显示蒙版的第二个内容，再点击蒙版蒙版消失。</p>
+<h3 id="核心思路及代码实现"><a href="#核心思路及代码实现" class="headerlink" title="核心思路及代码实现"></a>核心思路及代码实现</h3><h4 id="emsp-emsp-什么是蒙版及如何实现？"><a href="#emsp-emsp-什么是蒙版及如何实现？" class="headerlink" title="&emsp;&emsp;什么是蒙版及如何实现？"></a>&emsp;&emsp;什么是蒙版及如何实现？</h4><p>&emsp;&emsp;所谓“蒙版”，其实就是在应用当前界面覆盖一层半透明的蒙层，然后掏几个矩形的洞，在洞里显示要进行功能说明的控件，在矩形洞周围画图片显示对该控件的功能说明。如下图所示：</p>
+<p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/mask_pic.png" alt=""></p>
+<p>&emsp;&emsp;综合来看，这个蒙版有全透明部分（矩形洞），也有半透明部分（除矩形洞外的区域）。那怎么实现这种效果呢？我采用的实现方式是：在当前界面覆盖一层全屏且透明的界面，然后在此界面上画矩形，使矩形内部为透明，外部为不透明。</p>
+<p>&emsp;&emsp;怎么在当前界面覆盖一层全屏且透明的界面呢？我想到的实现有两种：透明且全屏的activity、透明且全屏的Dialog。如果使用Activity实现，那就需要在清单文件注册此Activity，而使用Dialog实现就可省略这一步。另外，android官方比较推荐在使用Dialog时，用DialogFragment来实现，所以，最终选择的实现方式就是使用透明且全屏的DialogFragment了。</p>
+<p>&emsp;&emsp;怎么做出一个透明且全屏的DialogFragment呢？网上的实现比较多，我最终选择的是在onCreate方法中设置style的方式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MaskDialog extends DialogFragment&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void onCreate(@Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        setStyle(DialogFragment.STYLE_NORMAL, R.style.MaskDialog);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;R.style.MaskDialog的声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--透明全屏Dialog--&gt;</span><br><span class="line">&lt;!--继承主题中的Dialog样式，下面的属性都是对Dialog所在Window的设置--&gt;</span><br><span class="line">&lt;style name=&quot;MaskDialog&quot; parent=&quot;Theme.AppCompat.Light.Dialog&quot;&gt;</span><br><span class="line">    &lt;!--设置成无标题栏的--&gt;</span><br><span class="line">    &lt;item name=&quot;android:windowNoTitle&quot;&gt;true&lt;/item&gt;</span><br><span class="line">    &lt;!--设置成全屏--&gt;</span><br><span class="line">    &lt;item name=&quot;android:windowFullscreen&quot;&gt;true&lt;/item&gt;</span><br><span class="line">    &lt;!--控制window是否全屏，false,就是不悬浮、全屏；true，就是悬浮、不全屏--&gt;</span><br><span class="line">    &lt;item name=&quot;android:windowIsFloating&quot;&gt;false&lt;/item&gt;</span><br><span class="line">    &lt;!--设置window背景色--&gt;</span><br><span class="line">    &lt;item name=&quot;android:windowBackground&quot;&gt;@android:color/transparent&lt;/item&gt;</span><br><span class="line">    &lt;item name=&quot;android:background&quot;&gt;@android:color/transparent&lt;/item&gt;</span><br><span class="line">    &lt;!--如果设置成true，整个窗口会显得更暗，设置成fasle就不会更暗了--&gt;</span><br><span class="line">    &lt;item name=&quot;android:backgroundDimEnabled&quot;&gt;false&lt;/item&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="emsp-emsp-怎么创建内部为透明、外部为填充色的矩形？"><a href="#emsp-emsp-怎么创建内部为透明、外部为填充色的矩形？" class="headerlink" title="&emsp;&emsp;怎么创建内部为透明、外部为填充色的矩形？"></a>&emsp;&emsp;怎么创建内部为透明、外部为填充色的矩形？</h4><p>&emsp;&emsp;上述就已经做出了一个透明且全屏的界面了，下一步来看怎么画出一个或多个矩形，并使矩形内部为全透明，其余部分均为半透明。</p>
+<p>&emsp;&emsp;矩形是画出来的，所以需要一个控件的画板来承载此矩形。而且此控件应该是填充整个DialogFragment的，这样矩形外的半透明区域就可以覆盖这个界面了。控件填充整个DialogFragment这个就相当简单了，只需要在onCreateView中填充一个布局，且此布局的android:layout_width和android:layout_height属性均为match_parent就可以，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) &#123;</span><br><span class="line"></span><br><span class="line">    View inflateView = inflater.inflate(R.layout.activity_mask_index, container);</span><br><span class="line">    return inflateView;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;布局文件activity_mask_index内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;com.example.yizhan.maskdemo.mask.MaskRectView</span><br><span class="line">        android:id=&quot;@+id/mask_react_view&quot;</span><br><span class="line">        android:layout_width=&quot;match_parent&quot;</span><br><span class="line">        android:layout_height=&quot;match_parent&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/RelativeLayout&gt;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;MaskRectView，就是上面说的要画出矩形的自定义控件，下面会主要围绕它来说。</p>
+<p>&emsp;&emsp;怎么在自定义控件中画出矩形呢？如果只是画一个矩形，那大可以在此自定义控件的onDraw方法调用canvas.drawRect即可。但我们的需求是不一定就只画一个矩形，那就需要使用到Path了。path可以做到，add多个Rect到Path后通过canvas.drawPath一次性绘制出所有矩形。另外，画矩形是需要先给出矩形的left、top、right、bottom才可以的，所以我们就需要在此自定义控件中提供一个bean数组用来提供矩形的位置信息。首先来看下，bean的定义<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class MaskBean implements Serializable &#123;</span><br><span class="line">    public float mLeft = 0;</span><br><span class="line">    public float mTop = 0;</span><br><span class="line">    public float mRight = 0;</span><br><span class="line">    public float mBottom = 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;就是定义了四个变量用于标识所画矩形的位置信息。其次，来看下自定义控件中此bean的数组以及对此数组的使用、还有就是画出多个矩形：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">public class MaskRectView extends View &#123;</span><br><span class="line"></span><br><span class="line">    //画笔</span><br><span class="line">    private Paint mPaint;</span><br><span class="line"></span><br><span class="line">    //控件的宽高</span><br><span class="line">    private int mWidth;</span><br><span class="line">    private int mHeight;</span><br><span class="line">    //用于记录矩形位置信息的bean数组</span><br><span class="line">    private MaskBean[] mMaskBeans;</span><br><span class="line">    </span><br><span class="line">    //画笔颜色</span><br><span class="line">    private int fillColor = Color.BLACK;</span><br><span class="line">    </span><br><span class="line">    private void init() &#123;</span><br><span class="line">        </span><br><span class="line">        //初始化画笔</span><br><span class="line">        mPaint = new Paint();</span><br><span class="line">        mPaint.setStyle(Paint.Style.FILL);//画笔模式为填充</span><br><span class="line">        mPaint.setAntiAlias(true);//抗锯齿</span><br><span class="line">        mPaint.setColor(fillColor);//默认颜色</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    protected void onSizeChanged(int w, int h, int oldw, int oldh) &#123;</span><br><span class="line">        super.onSizeChanged(w, h, oldw, oldh);</span><br><span class="line">        //就是用来获取控件的宽高的</span><br><span class="line">        mWidth = w;</span><br><span class="line">        mHeight = h;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    protected void onDraw(Canvas canvas) &#123;</span><br><span class="line">        super.onDraw(canvas);</span><br><span class="line"></span><br><span class="line">        //bean数组的判空</span><br><span class="line">        if (mMaskBeans == null || mMaskBeans.length == 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //给画笔设置上颜色</span><br><span class="line">        mPaint.setColor(fillColor);</span><br><span class="line">        </span><br><span class="line">        //**画出一个或多个矩形（圆角矩形）</span><br><span class="line">        Path path = new Path();</span><br><span class="line">        for (MaskBean bean : mMaskBeans) &#123;</span><br><span class="line"></span><br><span class="line">            RectF rectF = new RectF();</span><br><span class="line">            rectF.left = bean.mLeft;</span><br><span class="line">            rectF.top = bean.mTop;</span><br><span class="line">            rectF.right = bean.mRight;</span><br><span class="line">            rectF.bottom = bean.mBottom;</span><br><span class="line"></span><br><span class="line">            path.addRoundRect(rectF, 8, 8, Path.Direction.CW);</span><br><span class="line">        &#125;</span><br><span class="line">        //一次性画出所有矩形</span><br><span class="line">        canvas.drawPath(path, mPaint);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //画笔颜色的设置暴露出来，有外界决定填充色</span><br><span class="line">    public void setFillColor(int color) &#123;</span><br><span class="line">        this.fillColor = color;</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //设置bean数组，也就是说，在什么位置显示矩形是外部的Dialog决定的</span><br><span class="line">    public void setMaskBean(MaskBean[] maskBeans) &#123;</span><br><span class="line">        this.mMaskBeans = maskBeans;</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;一下子贴了N多的代码，但都很好理解。说几个点：</p>
+<ul>
+<li>初始化Paint时，画笔模式设置成了Paint.Style.FILL，是因为只关注矩形图形而不关注其内部填充色或外部填充色时，可以用Paint.Style.STROKE，但这里是关注填充色的；</li>
+<li>覆写的onSizeChanged就一个作用：获取当前控件的宽高。而上述已经在DialogFragment的onCreateView方法中将此控件的宽高设置成全屏了，所以这个宽高其实就是屏幕的宽高；</li>
+<li>画笔颜色fillColor为控件的成员变量，初始值为黑色，并提供了setFillColor方法给外界的DialogFragment。画笔模式已经设置成了填充模式，所以这里的画笔颜色其实就是填充色。这样就能由外界的DialogFragment来决定填充色了；</li>
+<li>onDraw方法中的逻辑是，遍历bean数组中的所有bean，取出bean中的所要画的矩形的位置信息，add到path中，一次性画出；</li>
+<li>bean数组也暴露给外界的DialogFragment，由其决定要显示的矩形位置；</li>
+<li>上述所画的其实并非矩形而是圆角矩形，因为圆角矩形更美观。</li>
+<li>上述代码中将位置信息add到Path时传入了一个<strong>Path.Direction.<em>CW</em></strong>，Path中的图形都是有方向的，这里的<strong><em>cw</em></strong>表示顺时针方向。这个参数主要会影响到Path的填充模式setFillType。</li>
+</ul>
+<p>&emsp;&emsp;上述代码自造一些数据运行后你会发现，填充色只是填充了矩形内部，外部为透明。我们需求正好相反：填充色填充矩形外部，矩形内部应为透明。那怎么做到呢？这里就要修改Path的填充模式了，使用Path的setFillType方法。关于这个方法及其传入的参数，稍微有些复杂，因为会涉及到计算机识别某个点是在图形内部或外部的基本原理（奇偶规则和非零环绕数规则），这里不作表述。这里直接给解决办法，很简单，只一句代码：在Path path = new Path()代码下，直接加一句：path.setFillType(Path.FillType.INVERSE_EVEN_ODD)就可以了。</p>
+<p>&emsp;&emsp;上述的代码是没有问题的，但真正运行后发现还是有问题，运行结果并没有像我们期望的内部透明、外部填充。为什么呢？因为使Path的填充类型生效，还需要关闭硬件加速才可以。而硬件加速可以在整个应用级别关闭，也可以在Activity、Window以及View级别关闭。为了使硬件加速的关闭影响范围尽量小，这里使用了view级别的硬件加速关闭：在上述init方法中添加setLayerType(View.LAYER_TYPE_SOFTWARE, null)即可。</p>
+<h4 id="emsp-emsp-怎么在矩形的周边画出图片？"><a href="#emsp-emsp-怎么在矩形的周边画出图片？" class="headerlink" title="&emsp;&emsp;怎么在矩形的周边画出图片？"></a>&emsp;&emsp;怎么在矩形的周边画出图片？</h4><p>&emsp;&emsp;现在在控件中已经画出一个或多个矩形，并且已做到“内部透明、外部填充”，那下一步就是在这些矩形周边画图片了。画图片之前需要确定这几个信息：所要画的图片Bitmap（画什么）、图片的位置信息（在哪里画）。这些信息我依旧把它放在bean数组中。bean中需要添加如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class MaskBean implements Serializable &#123;</span><br><span class="line">    public static final int RECT_LEFT = 0;</span><br><span class="line">    public static final int RECT_TOP = 1;</span><br><span class="line">    public static final int RECT_RIGHT = 2;</span><br><span class="line">    public static final int RECT_BOTTOM = 3;</span><br><span class="line">    </span><br><span class="line">    ...//省略内容为矩形的位置信息：left、top、right、bottom</span><br><span class="line">    </span><br><span class="line">    public Bitmap mBitmap = null;</span><br><span class="line">    //矩形与该方向上的图片的间距</span><br><span class="line">    //方向为RECT_LEFT：图片右上角与矩形左上角的间距</span><br><span class="line">    //方向为RECT_TOP：图片左下角与矩形左上角的间距</span><br><span class="line">    //方向为RECT_RIGHT：图片左上角与矩形右上角的间距</span><br><span class="line">    //方向为RECT_BOTTOM：图片左上角与矩形左下角的间距</span><br><span class="line">    //间距均为正值</span><br><span class="line">    public float mBitmapDx = 0;</span><br><span class="line">    public float mBitmapDy = 0;</span><br><span class="line"></span><br><span class="line">    //图片在矩形的那个方向上</span><br><span class="line">    public int bitmapType = RECT_LEFT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;图片可能的位置，就是矩形的左边、上边、右边、下边四个方向。上述bean中就定义了图片的四个方向RECT_LEFT、RECT_TOP、RECT_RIGHT、RECT_BOTTOM及标识当前图片在哪个方向的bitmapType，还定义了图片与矩形的位置间距，因为矩形的位置已知，根据此间距及图片bitmap的宽高就可以算出bitmap左上角的坐标，而有了左上角的坐标就可以使用canvas.drawBitmap画出图片。那为什么不直接在bean中直接定义bitmapX、bitmapY直接给出bitmap的左上角坐标不是很好吗？看蒙版效果图你能知道图片在矩形的哪个方向上以及大致估算出（或UI同事给出）该图片的某个角距矩形某个角的间距，但根据这些信息你还要计算出图片的宽高才能算出图片的左上角坐标，而获取图片的宽高在控件内就可以做，如果在控件内做的话，那控件外只需要提供图片在哪个方向bitmapType上并按照bean中“矩形与该方向上图片的间距”的规定给出mBitmapDx、mBitmapDy的值，控件内就可以做图片左上角坐标的计算了。通过这种设定，简化控件外调用方的处理，还是很不错的。</p>
+<p>&emsp;&emsp;上述说的是bitmap位置信息的传递，那看一下在onDraw方法内怎么画出该图片<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onDraw(Canvas canvas) &#123;</span><br><span class="line">    ...//省略的是上面讲到的使用Path画出多个矩形的代码</span><br><span class="line">    mPaint.setColor(0xff000000);</span><br><span class="line"></span><br><span class="line">    for (MaskBean bean : mMaskBeans) &#123;</span><br><span class="line">        //画bitmap</span><br><span class="line">        if (bean.mBitmap != null) &#123;</span><br><span class="line"></span><br><span class="line">            //图片的宽高</span><br><span class="line">            int width = bean.mBitmap.getWidth();</span><br><span class="line">            int height = bean.mBitmap.getHeight();</span><br><span class="line"></span><br><span class="line">            //将要画的bitmap的左上角坐标：（bitmapLeft，bitmapTop）</span><br><span class="line">            float bitmapLeft = 0;</span><br><span class="line">            float bitmapTop = 0;</span><br><span class="line"></span><br><span class="line">            switch (bean.bitmapType) &#123;</span><br><span class="line">                case MaskBean.RECT_LEFT://左边，图片右上角与矩形左上角的间距</span><br><span class="line">                    bitmapLeft = bean.mLeft - bean.mBitmapDx - width;</span><br><span class="line">                    bitmapTop = bean.mTop + bean.mBitmapDy;</span><br><span class="line">                    break;</span><br><span class="line">                case MaskBean.RECT_TOP://上边，图片左下角与矩形左上角的间距</span><br><span class="line">                    bitmapLeft = bean.mLeft + bean.mBitmapDx;</span><br><span class="line">                    bitmapTop = bean.mTop - bean.mBitmapDy - height;</span><br><span class="line">                    break;</span><br><span class="line">                case MaskBean.RECT_RIGHT://右边，图片左上角与矩形右上角的间距</span><br><span class="line">                    bitmapLeft = bean.mRight + bean.mBitmapDx;</span><br><span class="line">                    bitmapTop = bean.mTop + bean.mBitmapDy;</span><br><span class="line">                    break;</span><br><span class="line">                case MaskBean.RECT_BOTTOM://下边，图片左上角与矩形左下角的间距</span><br><span class="line">                    bitmapLeft = bean.mLeft + bean.mBitmapDx;</span><br><span class="line">                    bitmapTop = bean.mBottom + bean.mBitmapDy;</span><br><span class="line">                    break;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Rect src = new Rect(0, 0, width, height);</span><br><span class="line">            int destLeft = (int) bitmapLeft;</span><br><span class="line">            int destTop = (int) bitmapTop;</span><br><span class="line">            int destRight = (int) (bitmapLeft + width);</span><br><span class="line">            int destBottom = (int) (bitmapTop + height);</span><br><span class="line"></span><br><span class="line">            //Bitmap目标矩形</span><br><span class="line">            Rect dest = new Rect(destLeft, destTop, destRight, destBottom);</span><br><span class="line"></span><br><span class="line">            canvas.drawBitmap(bean.mBitmap, src, dest, mPaint);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;又是贴出了好些代码，再说几个点：</p>
+<ul>
+<li>在开始画bitmap之前设置了画笔颜色：mPaint.setColor(0xff000000)，这里其实有一个坑：画多个矩形时，其实已经给画笔设置了颜色mPaint.setColor(fillColor)，而此处的fillColor一般是半透明的，如果此处不再次设置下画笔颜色为不透明的话，会导致画出来的图片颜色有点儿不那么亮，所以，这里设置画笔颜色是必需的；</li>
+<li>画图片的基本逻辑是：根据设定的图片相对于矩形的方向和间距，算出图片左上角坐标，然后再根据图片的宽高，算出图片右下角坐标，然后调用canvas的drawBitmap将图片画到指定的位置</li>
+</ul>
+<p>&emsp;&emsp;上述的代码画出了图片，但实际使用中，还是会遇到一些问题，比如说，图片是根据其宽高获取的，图片太大就可能超出屏幕边界。那怎么避免这种情况呢？这就需要对算出的destLeft、destTop、destRight、destBottom做一些处理：在Rect dest = new Rect(destLeft, destTop, destRight, destBottom)代码前添加如下代码即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//超出边界的处理</span><br><span class="line">if (destLeft &lt; 0) &#123;//图片的左边界超出了屏幕左侧</span><br><span class="line">    if (destRight &lt; 10) &#123;//在图片的左边界超出屏幕左侧的前提下，图片的右边界在屏幕左侧10像素内，那就不显示了</span><br><span class="line">        break;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        destLeft = 10;//这里的&quot;10&quot;和上面的&quot;10&quot;，是我手动设置的图片距离屏幕左侧的间距</span><br><span class="line">        destBottom = destTop + (destRight - destLeft) * height / width;//为了等比例显示，调整高度</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (destTop &lt; 0) &#123;</span><br><span class="line">    if (destBottom &lt; 10) &#123;</span><br><span class="line">        break;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        destTop = 10;</span><br><span class="line">        destRight = destLeft + (destBottom - destTop) * width / height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (destRight &gt; mWidth) &#123;</span><br><span class="line">    if (destLeft &gt; mWidth - 10) &#123;</span><br><span class="line">        break;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        destRight = mWidth - 10;</span><br><span class="line">        destBottom = destTop + (destRight - destLeft) * height / width;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (destBottom &gt; mHeight) &#123;</span><br><span class="line">    if (destTop &gt; mHeight - 10) &#123;</span><br><span class="line">        break;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        destBottom = mHeight - 10;</span><br><span class="line">        destRight = destLeft + (destBottom - destTop) * width / height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;到此，在矩形周边画图片的处理已经基本完毕了。</p>
+<h4 id="emsp-emsp-画出阴影"><a href="#emsp-emsp-画出阴影" class="headerlink" title="&emsp;&emsp;画出阴影"></a>&emsp;&emsp;画出阴影</h4><p>&emsp;&emsp;其实仔细观察的话，你会发现，上述矩形周边是有阴影的。那怎么画出阴影呢？这里就要用到Paint的setMaskFilter方法了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public class MaskRectView extends View &#123;</span><br><span class="line">    ...</span><br><span class="line">    private BlurMaskFilter mBlurMaskFilter = new BlurMaskFilter(10, BlurMaskFilter.Blur.OUTER);</span><br><span class="line">    ...</span><br><span class="line">    @Override</span><br><span class="line">    protected void onDraw(Canvas canvas) &#123;</span><br><span class="line">        ...//省略的内容是上述画矩形的代码</span><br><span class="line">        ...//省略的内容是上述画图片的代码</span><br><span class="line">        Path path2 = new Path();</span><br><span class="line">        mPaint.setColor(fillColor);//默认颜色</span><br><span class="line">        mPaint.setMaskFilter(mBlurMaskFilter);</span><br><span class="line"></span><br><span class="line">        for (MaskBean bean : mMaskBeans) &#123;</span><br><span class="line"></span><br><span class="line">            RectF rectF = new RectF();</span><br><span class="line">            rectF.left = bean.mLeft;</span><br><span class="line">            rectF.top = bean.mTop;</span><br><span class="line">            rectF.right = bean.mRight;</span><br><span class="line">            rectF.bottom = bean.mBottom;</span><br><span class="line"></span><br><span class="line">            path2.addRoundRect(rectF, 8, 8, Path.Direction.CW);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        canvas.drawPath(path2, mPaint);</span><br><span class="line">        mPaint.setMaskFilter(null);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;画阴影使用到了BlurMaskFilter对象，以及Paint的setMaskFilter方法。具体原理本篇文章并不准备展开说明，有兴趣的话可以自己去查一下。涉及到一个问题这里要说明一下，此处的代码和上面画矩形的代码很像，都是通过创建path对象，然后将一个个矩形添加到path中，不同的是，此处的代码设置了maskFilter，那为什么不把此处的代码与上述画矩形的代码进行合并，一次性画出“内部透明、外部填充”的矩形及其阴影呢？这个我试过了之后，发现这两处代码兼容后并不能实现我们预期的效果，所以此处分为了两处。</p>
+<h4 id="emsp-emsp-怎么获取view在屏幕中的位置？"><a href="#emsp-emsp-怎么获取view在屏幕中的位置？" class="headerlink" title="&emsp;&emsp;怎么获取view在屏幕中的位置？"></a>&emsp;&emsp;怎么获取view在屏幕中的位置？</h4><p>&emsp;&emsp;上述已经画出了“内部为透明、外部为填充”的矩形、矩形周围的图片及矩形的阴影。接下来，看怎么调用此自定义控件。因为后面会给出完整的源码，不需处理直接的数据传递不再表述。这里只看一下，怎么获取view在屏幕中的位置。</p>
+<p>&emsp;&emsp;DialogFragment只需把需要显示的控件传递过来，由DialogFragment自身把获取控件在屏幕中的位置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int[] locations = new int[2];</span><br><span class="line">view.getLocationOnScreen(locations);</span><br><span class="line">left = locations[0];</span><br><span class="line">top = locations[1];</span><br><span class="line">right = maskBean.mLeft + view.getWidth();</span><br><span class="line">bottom = maskBean.mTop + view.getHeight();</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;其实也挺简单的，就是调用了一个api而已。剩余的诸如自定义控件的点击事件、bitmap数据的传递，就没什么好说的了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>&emsp;&emsp;本文通过DialogFragment+自定义控件做了一个简单的蒙版效果，整体的思路其实挺简单的，从一开始有一个想法，之后有什么问题解决什么问题，有什么需求就想办法做出什么样的需求。如看这篇博客的同行，还有问题，可通过邮箱（zjz710605775@163.com）联系到我。</p>
+<p>&emsp;&emsp;这里是<a href="https://github.com/yizhanzjz/MaskDemo" target="_blank" rel="noopener">完整的源码</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/29/android笔记之SystemServiceRegistry/" rel="next" title="android笔记之SystemServiceRegistry">
+                <i class="fa fa-chevron-left"></i> android笔记之SystemServiceRegistry
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">yizhanzjz</p>
+              <p class="site-description motion-element" itemprop="description">record and share</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最终实现效果"><span class="nav-number">2.</span> <span class="nav-text">最终实现效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心思路及代码实现"><span class="nav-number">3.</span> <span class="nav-text">核心思路及代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-什么是蒙版及如何实现？"><span class="nav-number">3.1.</span> <span class="nav-text">  什么是蒙版及如何实现？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-怎么创建内部为透明、外部为填充色的矩形？"><span class="nav-number">3.2.</span> <span class="nav-text">  怎么创建内部为透明、外部为填充色的矩形？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-怎么在矩形的周边画出图片？"><span class="nav-number">3.3.</span> <span class="nav-text">  怎么在矩形的周边画出图片？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-画出阴影"><span class="nav-number">3.4.</span> <span class="nav-text">  画出阴影</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-怎么获取view在屏幕中的位置？"><span class="nav-number">3.5.</span> <span class="nav-text">  怎么获取view在屏幕中的位置？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yizhanzjz</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149085"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
