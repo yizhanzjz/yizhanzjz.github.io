@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言&amp;emsp;&amp;emsp;最近自定义控件的实践相对多一些，看到了别人app上实现的效果就想自己动手尝试下，看自己能不能做到。本文是对一些app第一个页面的“跳过”按钮及一些缓冲框的实现。一个控件就详细写一篇文，未免过于麻烦，所以这里是做了一个汇总，只写核心思路及相关伪代码，几个控件写成一篇。后面会给出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一些“跳过”按钮及缓冲框示例">
+<meta property="og:url" content="http://yizhanzjz.com/2017/12/19/一些“跳过”按钮及缓冲框示例/index.html">
+<meta property="og:site_name" content="yizhanzjz&#39;s blogs">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;最近自定义控件的实践相对多一些，看到了别人app上实现的效果就想自己动手尝试下，看自己能不能做到。本文是对一些app第一个页面的“跳过”按钮及一些缓冲框的实现。一个控件就详细写一篇文，未免过于麻烦，所以这里是做了一个汇总，只写核心思路及相关伪代码，几个控件写成一篇。后面会给出完整代码。 1. 矩形倒计时“跳过”&amp;emsp;&amp;emsp;1. 先来看一下最终效果： &amp;ems">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet0.gif">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet1.gif">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet2.gif">
+<meta property="og:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet3.gif">
+<meta property="og:updated_time" content="2017-12-19T08:41:45.121Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一些“跳过”按钮及缓冲框示例">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;最近自定义控件的实践相对多一些，看到了别人app上实现的效果就想自己动手尝试下，看自己能不能做到。本文是对一些app第一个页面的“跳过”按钮及一些缓冲框的实现。一个控件就详细写一篇文，未免过于麻烦，所以这里是做了一个汇总，只写核心思路及相关伪代码，几个控件写成一篇。后面会给出完整代码。 1. 矩形倒计时“跳过”&amp;emsp;&amp;emsp;1. 先来看一下最终效果： &amp;ems">
+<meta name="twitter:image" content="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet0.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'C2MU51E4BQ',
+      apiKey: '0aeb872e9023272e0e75879918f98dc6',
+      indexName: 'blog_search',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"输入关键字进行搜索","hits_empty":"找不到关于 ${query} 的文章","hits_stats":"共找到 ${hits} 篇文章，花了 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yizhanzjz.com/2017/12/19/一些“跳过”按钮及缓冲框示例/"/>
+
+
+
+
+
+  <title>一些“跳过”按钮及缓冲框示例 | yizhanzjz's blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yizhanzjz's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">study.practise.years of it.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/12/19/一些“跳过”按钮及缓冲框示例/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yizhanzjz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yizhanzjz's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一些“跳过”按钮及缓冲框示例</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-19T16:41:03+08:00">
+                2017-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/12/19/一些“跳过”按钮及缓冲框示例/" class="leancloud_visitors" data-flag-title="一些“跳过”按钮及缓冲框示例">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>&emsp;&emsp;最近自定义控件的实践相对多一些，看到了别人app上实现的效果就想自己动手尝试下，看自己能不能做到。本文是对一些app第一个页面的“跳过”按钮及一些缓冲框的实现。一个控件就详细写一篇文，未免过于麻烦，所以这里是做了一个汇总，只写核心思路及相关伪代码，几个控件写成一篇。后面会给出完整代码。</p>
+<h4 id="1-矩形倒计时“跳过”"><a href="#1-矩形倒计时“跳过”" class="headerlink" title="1. 矩形倒计时“跳过”"></a>1. 矩形倒计时“跳过”</h4><h5 id="emsp-emsp-1-先来看一下最终效果："><a href="#emsp-emsp-1-先来看一下最终效果：" class="headerlink" title="&emsp;&emsp;1. 先来看一下最终效果："></a>&emsp;&emsp;1. 先来看一下最终效果：</h5><p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet0.gif" alt="image"></p>
+<h5 id="emsp-emsp-2-基本思路及相关代码"><a href="#emsp-emsp-2-基本思路及相关代码" class="headerlink" title="&emsp;&emsp;2. 基本思路及相关代码"></a>&emsp;&emsp;2. 基本思路及相关代码</h5><p>&emsp;&emsp;首先，我们看到“跳过”这两个字的背景是一个圆角矩形，而控件的形状一般是矩形，这时，我们把控件的背景设置成透明的，然后在控件上画出圆角矩形就可以了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private int mBgColor = Color.TRANSPARENT;</span><br><span class="line">// 画出控件背景色，为透明</span><br><span class="line">canvas.drawColor(mBgColor)</span><br><span class="line"></span><br><span class="line">//圆角矩形内填充的颜色，默认是半透明的黑色</span><br><span class="line">private int mRectFillColor = 0x32000000;</span><br><span class="line">//控件坐标系移至控件中心位置</span><br><span class="line">canvas.translate(mWidth / 2, mHeight / 2);</span><br><span class="line">//在其上画出圆角矩形，圆角大小由外界决定</span><br><span class="line">mPaint.setColor(mRectFillColor);</span><br><span class="line">RectF rectF = new RectF(-mWidth / 2, -mHeight / 2, mWidth / 2, mHeight / 2);</span><br><span class="line">canvas.drawRoundRect(rectF, mCornerX, mCornerY, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;控件坐标系原点之所以移到控件的中心，是因为我们所画的内容基本上都是基于控件中心坐标的，移过去之后，我们更好确定我们所画内容的坐标。mBgColor、mRectFillColor、mCornerX、mCornerY都可以通过设定其set方法由控件外决定其值。</p>
+<p>&emsp;&emsp;其次，“跳过”这两个字以及倒计时的数字，我们希望它们能够被视为一个整体，置于控件的中心。那我们要做的就是先计算出这两字以及倒计时数字的宽度。另外，注意，一般“跳过”俩字跟倒计时数字是有间距的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private int mTextSize = 14;</span><br><span class="line">//估算出字体的宽度</span><br><span class="line">mPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * mTextSize);</span><br><span class="line">mPaint.setTextAlign(Paint.Align.LEFT);</span><br><span class="line"></span><br><span class="line">Rect rect = new Rect();</span><br><span class="line">mPaint.getTextBounds(text, 0, text.length(), rect);</span><br><span class="line">float textWidth = rect.right - rect.left;</span><br><span class="line"></span><br><span class="line">private int mNumberTextSize = 12;</span><br><span class="line">//估算出数字的宽度</span><br><span class="line">mPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * mNumberTextSize);</span><br><span class="line">mPaint.setTextAlign(Paint.Align.LEFT);</span><br><span class="line"></span><br><span class="line">Rect rect1 = new Rect();</span><br><span class="line">mPaint.getTextBounds(&quot;3&quot;, 0, 1, rect1);</span><br><span class="line">float numberWidth = rect1.right - rect1.left;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;计算“跳过”两个字宽度、计算倒计时数字宽度的方法是一样的，都是给画笔设置了textSize，然后用画笔的getTextBounds方法计算。算出了“跳过”两字和倒计时数字的宽度，如果两者有间距的话就能计算出这两者看做一个整体时，这个整体的宽度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//字体与数字之间的间距</span><br><span class="line">private float mDivider = 15;</span><br><span class="line">//总长度，中间添加间距</span><br><span class="line">float length = textWidth + mDivider + numberWidth;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;有了这个宽度就可以计算出，“跳出”和倒计时数字的基线坐标了:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setTextAlign(Paint.Align.LEFT);</span><br><span class="line">Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();</span><br><span class="line">“跳过”两字的基线坐标（jumpLoc）：(-length / 2,(-fontMetrics.top - fontMetrics.bottom) / 2)</span><br><span class="line"></span><br><span class="line">mPaint.setTextAlign(Paint.Align.LEFT);</span><br><span class="line">Paint.FontMetrics fontMetrics1 = mPaint.getFontMetrics();</span><br><span class="line">倒计时数字的基线坐标（numberLoc）：(-length / 2 + textWidth + mDivider,(-fontMetrics1.top - fontMetrics1.bottom) / 2)</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;最后，算出了基线坐标就可以分别画出“跳出”和倒计时数字了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColor(mTextColor);</span><br><span class="line">mPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * mTextSize);</span><br><span class="line">canvas.drawText(text, jumpLoc.x, jumpLoc.y, mPaint);</span><br><span class="line"></span><br><span class="line">mPaint.setColor(mNumberTextColor);</span><br><span class="line">mPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * mNumberTextSize);</span><br><span class="line">canvas.drawText(mDelayTime + &quot;&quot;, numberLoc.x, numberLoc.y, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;还有一点，标识倒计时数字的变量mDelayTime，本例是通过Timer完成倒计时。每过1秒，就向主线程发送一个消息，由主线程去控制mDelayTime的变化并重画控件（invalidate）。这部分代码看源码吧，在ThreeSecondJump0类中。</p>
+<h4 id="2-圆形倒计时“跳过”"><a href="#2-圆形倒计时“跳过”" class="headerlink" title="2. 圆形倒计时“跳过”"></a>2. 圆形倒计时“跳过”</h4><h5 id="emsp-emsp-1-最终效果如下："><a href="#emsp-emsp-1-最终效果如下：" class="headerlink" title="&emsp;&emsp;1. 最终效果如下："></a>&emsp;&emsp;1. 最终效果如下：</h5><p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet1.gif" alt="image"></p>
+<h5 id="emsp-emsp-2-基本思路及相关代码-1"><a href="#emsp-emsp-2-基本思路及相关代码-1" class="headerlink" title="&emsp;&emsp;2. 基本思路及相关代码"></a>&emsp;&emsp;2. 基本思路及相关代码</h5><p>&emsp;&emsp;如上效果，是看了网易新闻的splash页做的。首先，还是需要平移控件坐标系，画透明背景，把画笔设置成填充模式画一个圆，这些跟上面控件类似，在这里就不重复说了。这里说下面几个点：画“跳过”两字、画动态变化的红色边界。</p>
+<h6 id="emsp-emsp-画“跳过”两字"><a href="#emsp-emsp-画“跳过”两字" class="headerlink" title="&emsp;&emsp;画“跳过”两字"></a>&emsp;&emsp;画“跳过”两字</h6><p>&emsp;&emsp;仔细看“跳过”两个字，会发现它的大小基本上是跟圆边界顶着的，我们需要设置合适的大小才能够做到这样的效果，那怎么才能获取合适的大小呢？本例是通过循环得到的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">do &#123;</span><br><span class="line">    mPaint.setTextSize(mTextSize);</span><br><span class="line">    Rect rect = new Rect();</span><br><span class="line">    mPaint.getTextBounds(&quot;跳过&quot;, 0, 2, rect);</span><br><span class="line">    textWidth = rect.right - rect.left;</span><br><span class="line">    textHeight = rect.bottom - rect.top;</span><br><span class="line"></span><br><span class="line">    if (Math.pow(textWidth / 2, 2) + Math.pow(textHeight / 2, 2) &gt; Math.pow(mCircleRadius, 2)) &#123;</span><br><span class="line">        mTextSize -= 0.5;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125; while (true);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;使textSize逐渐缩小，直至字体的宽一半的平方与字体高一半的平方之和不再大于圆半径的平方。仔细思考下，前后两者的值正好相等时，包含字体的矩形正好“顶着”外部的黑色圆边界。从循环中跳出之后就正好是顶着圆边界的textSize了，然后估算出基线坐标，画出“跳出”两个字就可以了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//字体的颜色</span><br><span class="line">private int mTextColor = Color.WHITE;</span><br><span class="line"></span><br><span class="line">mPaint.setColor(mTextColor);</span><br><span class="line">Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();</span><br><span class="line">canvas.drawText(&quot;跳过&quot;, -textWidth / 2, (-fontMetrics.top - fontMetrics.bottom) / 2, mPaint);</span><br></pre></td></tr></table></figure></p>
+<h6 id="emsp-emsp-画动态变化的红色边界"><a href="#emsp-emsp-画动态变化的红色边界" class="headerlink" title="&emsp;&emsp;画动态变化的红色边界"></a>&emsp;&emsp;画动态变化的红色边界</h6><p>&emsp;&emsp;首先，画边界很简单，只需把画笔模式设置为stroke，半径与上述黑色圆半径一样，再设置上颜色和strokeWidth，基本就可以画出这个红色边界了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private int mCircleStrokeColor = Color.RED;</span><br><span class="line"></span><br><span class="line">mPaint.setColor(mCircleStrokeColor);</span><br><span class="line">mPaint.setStyle(Paint.Style.STROKE);</span><br><span class="line">mPaint.setStrokeWidth(mStrokeWidth);</span><br><span class="line">mPaint.setStrokeCap(Paint.Cap.ROUND);</span><br><span class="line"></span><br><span class="line">Path path = new Path();</span><br><span class="line">path.addCircle(0, 0, mCircleRadius, Path.Direction.CW);</span><br><span class="line">canvas.drawPath(path, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;但上述代码只是能画出一个静态的红色边界，自己不会动的。我们还需要使用属性动画及PathMeasure使之动起来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...//省略上述Paint设置部分</span><br><span class="line"></span><br><span class="line">Path path = new Path();</span><br><span class="line">path.addCircle(0, 0, mCircleRadius, Path.Direction.CW);</span><br><span class="line"></span><br><span class="line">//将此path交给一个PathMeasure对象</span><br><span class="line">PathMeasure pathMeasure = new PathMeasure(path, false);</span><br><span class="line">float length = pathMeasure.getLength();</span><br><span class="line">Path pathDst = new Path();</span><br><span class="line">//mCurrentValue，即为动画某一时刻的值</span><br><span class="line">//getSegment可以获取此path的片段</span><br><span class="line">pathMeasure.getSegment(mCurrentValue * length, length, pathDst, true);</span><br><span class="line">canvas.drawPath(pathDst, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;上述就可以画出一个动态的红色边界了，但此边界的起点是在x轴的正半轴上的，我们希望边界起点在y轴的负半轴。也好解决，暂时将控件坐标系逆时针旋转90度，然后再画path，画完path之后再恢复控件坐标系即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">canvas.save();</span><br><span class="line"></span><br><span class="line">canvas.rotate(-90);</span><br><span class="line"></span><br><span class="line">...//省略的内容为上述画path部分</span><br><span class="line"></span><br><span class="line">canvas.restore();</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;到此，起点在y轴负半轴、动态变化的红色边界就画完了。</p>
+<h4 id="3-仿ios菊花缓冲图标"><a href="#3-仿ios菊花缓冲图标" class="headerlink" title="3. 仿ios菊花缓冲图标"></a>3. 仿ios菊花缓冲图标</h4><h5 id="emsp-emsp-最终效果图如下："><a href="#emsp-emsp-最终效果图如下：" class="headerlink" title="&emsp;&emsp;最终效果图如下："></a>&emsp;&emsp;最终效果图如下：</h5><p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet2.gif" alt="image"></p>
+<h5 id="emsp-emsp-基本思路及相关代码"><a href="#emsp-emsp-基本思路及相关代码" class="headerlink" title="&emsp;&emsp;基本思路及相关代码"></a>&emsp;&emsp;基本思路及相关代码</h5><p>&emsp;&emsp;模仿ios的缓冲图标来写的，但不知道ios那边具体是如何实现的。我的实现效果总感觉不那么好，不知道是不是因为图片的问题。下面是我的基本思路：</p>
+<p>&emsp;&emsp;简单来讲，就是找了一张图片，然后给这张图片一个动画让它不停地旋转。那怎么使图片不停地旋转呢？本示例使用的Matrix的postRotate。下面一步一步来讲，一开始还是给控件画透明背景，将控件坐标系原点移到控件中心，这里不再多说。接下来就是画图片了，画图片有几个重载的方法，因为我们要用到矩阵的旋转，所以最终选择了如下这个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public void drawBitmap(@NonNull Bitmap bitmap, @NonNull Matrix matrix, @Nullable Paint paint)</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;第一步，先从应用资源中获取所要旋转的图片<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;调用drawBitmap时，默认图片的左上角是跟坐标系原点重合的，而我们是想让图片居中显示，这就需要第二步，平移图片将图片中心与坐标系原点重合为一点。我们且看drawBitmap的第二个参数Matrix，此矩阵会作用于bitmap的坐标，使bitmap完成平移、旋转、缩放或者错切的操作。我们现在需要平移，需调用matrix的translate相关方法进行操作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Matrix matrix = new Matrix();</span><br><span class="line">//向x轴负半轴和y轴负半轴平移宽度的一半、高度的一半</span><br><span class="line">matrix.postTranslate(-bitmapW / 2, -bitmapH / 2);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;平移过后就可将图片的中心与坐标系的中心置于同一点了。平移之后，还会有一个问题：控件的宽高是由控件外设置的，而图片的大小是固定的，这就可能造成图片太大在控件内显示不全或图片太小不能够很好地显示在控件中。这就需要第三步，缩放图片。缩放到图片的较大边刚好跟控件的较小边重合，当然为了更好一些的显示效果，我们可以让这两个边留一些间距<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//图片的宽高是一样的，所以只获取一个宽就可以了</span><br><span class="line">int bitmapWH = bitmap.getWidth();</span><br><span class="line">//找出控件宽高较小的</span><br><span class="line">int temp = mWidth &gt; mHeight ? mHeight : mWidth;</span><br><span class="line">int tempContent = temp - mPadding;</span><br><span class="line"></span><br><span class="line">//控件的较小边比图片的宽或高大多少倍</span><br><span class="line">float s = tempContent * 1.0f / bitmapWH;</span><br><span class="line"></span><br><span class="line">Matrix matrix = new Matrix();</span><br><span class="line">//这是上一步说明过的平移</span><br><span class="line">matrix.postTranslate(-bitmapWH / 2, -bitmapWH / 2);</span><br><span class="line">matrix.postScale(s, s);</span><br><span class="line">canvas.drawBitmap(bitmap, matrix, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;计算出当前控件的较小边是当前图片宽度或高度的多少倍，然后调用postScale等比例缩放，至此缩放完毕。以上的三步也只是画出了一个静态的图片并将其缩放到合适的宽高，而我们需要的是图片旋转起来。使图片旋转使用的就是matrix.postRotate这个方法，动起来就需要使用属性动画来不断改变图片旋转的角度来实现了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//画图片</span><br><span class="line">Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading);</span><br><span class="line">//图片的宽高是一样的，所以只获取一个宽就可以了</span><br><span class="line">int bitmapWH = bitmap.getWidth();</span><br><span class="line">//找出控件宽高较小的</span><br><span class="line">int temp = mWidth &gt; mHeight ? mHeight : mWidth;</span><br><span class="line">int tempContent = temp - mPadding;</span><br><span class="line"></span><br><span class="line">//控件的较小边比图片的宽或高大多少倍</span><br><span class="line">float s = tempContent * 1.0f / bitmapWH;</span><br><span class="line"></span><br><span class="line">Matrix matrix = new Matrix();</span><br><span class="line">matrix.postTranslate(-bitmapWH / 2, -bitmapWH / 2);</span><br><span class="line">matrix.postScale(s, s);</span><br><span class="line">//此处的mCurrentValue为属性动画0-1变化时某一个时刻的值</span><br><span class="line">matrix.postRotate(360 * mCurrentValue);</span><br><span class="line">canvas.drawBitmap(bitmap, matrix, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;至此，旋转缓冲控件完成。</p>
+<h4 id="4-仿交通银行缓冲框"><a href="#4-仿交通银行缓冲框" class="headerlink" title="4. 仿交通银行缓冲框"></a>4. 仿交通银行缓冲框</h4><p>&emsp;&emsp;手里有一张交通的卡，然后就下载了交通银行的app用，觉得他们的缓冲框挺有意思的，然后就想实现以下。</p>
+<h5 id="emsp-emsp-最终效果图如下"><a href="#emsp-emsp-最终效果图如下" class="headerlink" title="&emsp;&emsp;最终效果图如下"></a>&emsp;&emsp;最终效果图如下</h5><p><img src="https://github.com/yizhanzjz/ImageRepo/raw/master/progressSet3.gif" alt="image"></p>
+<h5 id="emsp-emsp-基本思路及相关代码-1"><a href="#emsp-emsp-基本思路及相关代码-1" class="headerlink" title="&emsp;&emsp;基本思路及相关代码"></a>&emsp;&emsp;基本思路及相关代码</h5><p>&emsp;&emsp;基本思路大致是这样的：先使用Path画两个圆弧，使用某种方式让这两个圆弧的某一个点连接，然后为此Path创建一个PathMeasure对象，调用其getSegment方法获取此path的某一个片段，最后使用属性动画使此片段动起来。</p>
+<p>&emsp;&emsp;首先，使用path画两个几乎为圆的圆弧，并保证第一个圆弧的最后一个点可以跟第二个圆弧的第一个点连接。而在画出第一个圆弧之前我们需要得到这些圆弧的半径<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//计算出单个圆的半径</span><br><span class="line">//当所画内容的宽尽量填充控件的宽时单个圆的半径</span><br><span class="line">float radius0 = (mWidth - mPadding) * 1.0f / 4 - mStrokeWidth;</span><br><span class="line">//当所画内容的高尽量填充控件的高时单个圆的半径</span><br><span class="line">float radius1 = (mHeight - mPadding) * 1.0f / 2 - mStrokeWidth;</span><br><span class="line">//较小值即为合适的半径</span><br><span class="line">float radius = radius0 &gt; radius1 ? radius1 : radius0;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;说明下，mPadding为所画的内容控件边界的间距，mStrokeWidth为圆弧边界的宽度。上述代码的意思是，先计算出所画内容的宽高尽量填充控件宽高时的半径，为了使所画内容始终保持在控件内，选择这两个半径中的较小半径。接下来就是，画两个圆弧了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//透明背景</span><br><span class="line">canvas.drawColor(mBgColor);</span><br><span class="line"></span><br><span class="line">//控件坐标系平移到控件中心</span><br><span class="line">canvas.translate(mWidth / 2, mHeight / 2);</span><br><span class="line"></span><br><span class="line">//画出背景轨道</span><br><span class="line">mPaint.setColor(mCirCleBgColor);</span><br><span class="line">mPaint.setStrokeWidth(mStrokeWidth);</span><br><span class="line"></span><br><span class="line">Path path = new Path();</span><br><span class="line"></span><br><span class="line">RectF rectF = new RectF(0, -radius, 2 * radius, radius);</span><br><span class="line">//这里虽然可以设置成-360，但设置成-360就会有问题，多了一条线</span><br><span class="line">path.addArc(rectF, 180, -359.99f);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">RectF rectF1 = new RectF(-2 * radius, -radius, 0, radius);</span><br><span class="line">path.arcTo(rectF1, 0, 359.99f);</span><br><span class="line"></span><br><span class="line">canvas.drawPath(path, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;前两句代码是画出控件的透明背景、将控件坐标系的原点移至控件的中心。之后设置画笔的颜色及stroke宽度，接着是画两个圆弧，第一个圆弧是从180度开始画起，逆时针359.99度，结合包含此圆弧的矩形坐标可知，这个圆弧的起始点是坐标系原点，最后一个点是一个十分接近坐标系原点的点，而画第二个圆弧使用的是path.arcTo，这就能保证第二个圆弧的起始点与第一个圆弧的最后一个点连接（arcTo方法的特性）。第二个圆弧的起始点是坐标系原点，最后一个点是十分接近坐标系原点的点，并没有连接在一起。</p>
+<p>&emsp;&emsp;这里有一个插曲，如果添加第一个圆弧到path时设置的不是-359.99f，而是-360f（划过的角度是可以设置成-360f的），就会莫名其妙是多一条直线。此直线并不是第二个圆弧的最后一个点与第一个圆弧起始点的连线（之所以这么想，是因为以为path自动闭合了），所以，就比较诡异，只能设置成一个十分靠近-360的值了。</p>
+<p>&emsp;&emsp;其次，要做的是根据此path创建一个PathMeasure对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//画动态的变化</span><br><span class="line">//设置画笔的颜色</span><br><span class="line">mPaint.setColor(mCircleColor);</span><br><span class="line"></span><br><span class="line">//根据上述path创建PathMeasure</span><br><span class="line">PathMeasure pathMeasure = new PathMeasure(path, false);</span><br><span class="line">//pathMeasure可以计算出上述path的总长度</span><br><span class="line">float length = pathMeasure.getLength();</span><br><span class="line">//mCurrentValue为在0~1之间变化的属性动画某一刻的值</span><br><span class="line">//startD，是获取的path片段的起始点，</span><br><span class="line">//随着mCurrentValue的变化，startD从path的起始点变化到最后一点</span><br><span class="line">float startD = mCurrentValue * length;</span><br><span class="line">Path pathDst = new Path();</span><br><span class="line">//ratio为动态线的长度</span><br><span class="line">if (mCurrentValue + ratio &lt;= 1) &#123;</span><br><span class="line">    float stopD = (mCurrentValue + ratio) * length;</span><br><span class="line">    pathMeasure.getSegment(startD, stopD, pathDst, true);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    //先取出startD-length这个片段</span><br><span class="line">    pathMeasure.getSegment(startD, length, pathDst, true);</span><br><span class="line">    Path pathDst0 = new Path();</span><br><span class="line">    //再从头取出不足mCurrentValue + ratio的片段</span><br><span class="line">    pathMeasure.getSegment(0, (mCurrentValue + ratio - 1) * length, pathDst0, true);</span><br><span class="line">    //都结合到path中</span><br><span class="line">    pathDst.addPath(pathDst0);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">canvas.drawPath(pathDst, mPaint);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;通过getSegment获取path的片段，片段的起始点距离path起始点的距离startD为：mCurrentValue <em> length，大部分情况下，片段的最后一点距离path起始点的距离stopD为：(mCurrentValue + ratio) </em> length，这样写可使动态变化弧线的长度固定为ratio <em> length。而少部分情况下，mCurrentValue + ratio已经大于1，这时候就需要先取出start~length这个片段，然后再从path的起始点取出另一个片段，使两个片段的长度之后为ratio </em> length。</p>
+<p>&emsp;&emsp;至此，仿交通银行的缓冲框已经制作完毕。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>&emsp;&emsp;两个“跳过”、两个缓冲框，实现起来大多都会用到属性动画完成动态效果，定时器本身也可以被动画替代。比较有挑战的，大概就是旋转图片时会用到矩阵的操作，完成一些动态效果时会用到PathMeasure来完成。其它可说的并没有太多，毕竟只是一些简单的效果。</p>
+<p>&emsp;&emsp;这里是<a href="https://github.com/yizhanzjz/progresssets" target="_blank" rel="noopener">完整代码</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.jpeg" alt="yizhanzjz 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="yizhanzjz 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/15/三个点（或小球）缓冲控件示例/" rel="next" title="三个点（或小球）缓冲控件示例">
+                <i class="fa fa-chevron-left"></i> 三个点（或小球）缓冲控件示例
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">yizhanzjz</p>
+              <p class="site-description motion-element" itemprop="description">record and share</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yizhanzjz" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/yizhan_zjz" target="_blank" title="CSDN">
+                    
+                      <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://www.jianshu.com/u/65a7bcbe8377" target="_blank" title="简书">
+                    
+                      <i class="fa fa-fw fa-globe"></i>简书</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-矩形倒计时“跳过”"><span class="nav-number">1.1.</span> <span class="nav-text">1. 矩形倒计时“跳过”</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-1-先来看一下最终效果："><span class="nav-number">1.1.1.</span> <span class="nav-text">  1. 先来看一下最终效果：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-2-基本思路及相关代码"><span class="nav-number">1.1.2.</span> <span class="nav-text">  2. 基本思路及相关代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-圆形倒计时“跳过”"><span class="nav-number">1.2.</span> <span class="nav-text">2. 圆形倒计时“跳过”</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-1-最终效果如下："><span class="nav-number">1.2.1.</span> <span class="nav-text">  1. 最终效果如下：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-2-基本思路及相关代码-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">  2. 基本思路及相关代码</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#emsp-emsp-画“跳过”两字"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">  画“跳过”两字</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#emsp-emsp-画动态变化的红色边界"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">  画动态变化的红色边界</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-仿ios菊花缓冲图标"><span class="nav-number">1.3.</span> <span class="nav-text">3. 仿ios菊花缓冲图标</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-最终效果图如下："><span class="nav-number">1.3.1.</span> <span class="nav-text">  最终效果图如下：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-基本思路及相关代码"><span class="nav-number">1.3.2.</span> <span class="nav-text">  基本思路及相关代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-仿交通银行缓冲框"><span class="nav-number">1.4.</span> <span class="nav-text">4. 仿交通银行缓冲框</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-最终效果图如下"><span class="nav-number">1.4.1.</span> <span class="nav-text">  最终效果图如下</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-基本思路及相关代码-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">  基本思路及相关代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yizhanzjz</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149085"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.3"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("pw62jY6NNYCsQJWJbKX7zOxN-gzGzoHsz", "Uy7mcCUVspTakGiNp05UnHvj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
