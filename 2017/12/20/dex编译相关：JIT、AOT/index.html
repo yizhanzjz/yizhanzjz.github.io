@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似">
+<meta name="description" content="前言&amp;emsp;&amp;emsp;在android的源码中看到了jit相关的代码，感觉jit这词儿有点儿眼熟，就查了一下其相关资料，顺带了解了一下android dex编译技术的变迁史。下面是总结，以问题为引导来说。 总结&amp;emsp;&amp;emsp;什么是JIT ?&amp;emsp;&amp;e">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mac mkdir read-only filesystem">
-<meta property="og:url" content="http://yizhanzjz.com/2017/11/24/mac-mkdir-read-only-filesystem/index.html">
+<meta property="og:title" content="dex编译相关：JIT、AOT">
+<meta property="og:url" content="http://yizhanzjz.com/2017/12/20/dex编译相关：JIT、AOT/index.html">
 <meta property="og:site_name" content="yizhanzjz&#39;s blogs">
-<meta property="og:description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。 找到了一篇在mac下编译androi">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;在android的源码中看到了jit相关的代码，感觉jit这词儿有点儿眼熟，就查了一下其相关资料，顺带了解了一下android dex编译技术的变迁史。下面是总结，以问题为引导来说。 总结&amp;emsp;&amp;emsp;什么是JIT ?&amp;emsp;&amp;emsp;JIT，即“Just In Time”，翻译过来就是“即时编译技术”。android在2.2版本引入此技术，主要是用来提">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-11-26T09:21:41.395Z">
+<meta property="og:updated_time" content="2017-12-20T07:49:32.480Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mac mkdir read-only filesystem">
-<meta name="twitter:description" content="最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。 找到了一篇在mac下编译androi">
+<meta name="twitter:title" content="dex编译相关：JIT、AOT">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;在android的源码中看到了jit相关的代码，感觉jit这词儿有点儿眼熟，就查了一下其相关资料，顺带了解了一下android dex编译技术的变迁史。下面是总结，以问题为引导来说。 总结&amp;emsp;&amp;emsp;什么是JIT ?&amp;emsp;&amp;emsp;JIT，即“Just In Time”，翻译过来就是“即时编译技术”。android在2.2版本引入此技术，主要是用来提">
 
 
 
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yizhanzjz.com/2017/11/24/mac-mkdir-read-only-filesystem/"/>
+  <link rel="canonical" href="http://yizhanzjz.com/2017/12/20/dex编译相关：JIT、AOT/"/>
 
 
 
 
 
-  <title>mac mkdir read-only filesystem | yizhanzjz's blogs</title>
+  <title>dex编译相关：JIT、AOT | yizhanzjz's blogs</title>
   
 
 
@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/11/24/mac-mkdir-read-only-filesystem/">
+    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2017/12/20/dex编译相关：JIT、AOT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yizhanzjz">
@@ -297,7 +297,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">mac mkdir read-only filesystem</h1>
+          <h1 class="post-title" itemprop="name headline">dex编译相关：JIT、AOT</h1>
         
 
         <div class="post-meta">
@@ -309,8 +309,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-24T14:18:29+08:00">
-                2017-11-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-20T15:49:14+08:00">
+                2017-12-20
               </time>
             
 
@@ -327,7 +327,7 @@
 
           
           
-             <span id="/2017/11/24/mac-mkdir-read-only-filesystem/" class="leancloud_visitors" data-flag-title="mac mkdir read-only filesystem">
+             <span id="/2017/12/20/dex编译相关：JIT、AOT/" class="leancloud_visitors" data-flag-title="dex编译相关：JIT、AOT">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -358,18 +358,38 @@
       
 
       
-        <p>最近看了一些android源码，看到ActivityManageService时发现android.jar中并没有ActivityManageService的源码，经查资料，该java文件是在frameworks/base/services/java/com/android/server/am/目录下，想看到它的话貌似只能去查看较为完整的android源码了。</p>
-<p>找到了一篇在mac下编译android源码的<a href="http://www.jianshu.com/p/ee84e456ed51" target="_blank" rel="noopener">文章</a>，按照所写内容一步一步操作，在使用命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil create -type SPARSE -fs &apos;Case-sensitive Journaled HFS+&apos; -size 40g ~/android.dmg</span><br></pre></td></tr></table></figure>
-<p>创建了磁盘映像并使用命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil attach ~/android.dmg -mountpoint /Volumes/android;</span><br></pre></td></tr></table></figure></p>
-<p>装载之后，却并不能在装载后的目录/Volumes/android下创建目录，即mkdir XXX时报了一个错，大致意思是这个磁盘映像是一个“read-only filesystem”，不能够创建目录或文件。</p>
-<p>首先，想着可能是权限不够吧，就在mkdir前面加一个sudo再次执行，并没有什么卵用，仍旧报“read-only filesystem”</p>
-<p>之后，尝试把/Volumes/android的目录权限修改为可读写的，切换到/Volumes目录下，执行”chmod a+w android”，仍旧报“read-only filesystem”</p>
-<p>后来，去网上搜索一些相关资料，找到了最终的解决方法：在用户主目录下执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdiutil convert android.dmg.sparseimage -format UDRW -o android.dmg.sparseimage</span><br></pre></td></tr></table></figure></p>
-<p>试过之后，可读写了，问题解决</p>
-<h4 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a><strong>参考资料：</strong></h4><ul>
-<li><a href="https://superuser.com/questions/146045/how-to-write-to-a-mac-osx-read-only-filesystem" target="_blank" rel="noopener">How to write to a Mac OSX read-only filesystem?</a>，在这个链接里找到磁盘映像转换格式的convert命令</li>
-<li><a href="https://www.cnblogs.com/wwl188/p/5612505.html" target="_blank" rel="noopener">Mac OS X 中一些常用的命令行技巧</a>，在这个链接里找到-format后面的可选项，UDRW表示可读写格式</li>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>&emsp;&emsp;在android的源码中看到了jit相关的代码，感觉jit这词儿有点儿眼熟，就查了一下其相关资料，顺带了解了一下android dex编译技术的变迁史。下面是总结，以问题为引导来说。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h5 id="emsp-emsp-什么是JIT"><a href="#emsp-emsp-什么是JIT" class="headerlink" title="&emsp;&emsp;什么是JIT ?"></a>&emsp;&emsp;什么是JIT ?</h5><p>&emsp;&emsp;JIT，即“Just In Time”，翻译过来就是“即时编译技术”。android在2.2版本引入此技术，主要是用来提高程序的执行效率的。既然是编译技术，那它具体编译的是什么？又是什么时候执行此操作的？JIT是在程序运行期间执行，可将java字节码编译成机器码，将java指令编译成cpu可执行的微处理器指令。</p>
+<p>&emsp;&emsp;那它又是怎么提高程序的执行效率的？2.2版本之前的android在程序运行时，代码的执行都需要先通过解释器将字节码转换成机器码，而引入了JIT后，对于会多次执行到的代码（比如某个类的函数、某一个经常使用到的执行路径相关的代码，就是所谓的“热点函数”、“热点trace”），JIT会将其编译成机器码。下次再执行此代码时就直接执行机器码，从而提高了代码的执行效率。</p>
+<p>&emsp;&emsp;为什么只是对热点函数、热点trace进行JIT编译，而不是全部的字节码？首先，字节码的大部分代码一般不会总是执行到（即执行频率低），而JIT是在程序运行期间编译，编译时又需要时间，在程序运行期间花时间编译一般不会执行到的代码，这不是一个好的选择。所以，JIT只编译热点函数、热点trace，对于非热点的代码仍旧在用到时用解释器去解释成机器码然后执行就可以了。</p>
+<p>&emsp;&emsp;还有一个点，JIT编译而来的机器码是存储到内存中的，不是在硬盘上。所以，在应用重新启动时，所有的热点代码也都需要使用jit重新编译成机器码。</p>
+<p>&emsp;&emsp;网上找到一段关于JIT在代码层面实现逻辑的说明，个人认为很好：“每启动一个应用程序，都会相应地启动一个dalvik虚拟机，启动时会建立JIT线程，一直在后台运行。当某段代码被调用时，虚拟机会判断它是否需要编译成机器码，如果需要，就做一个标记，JIT线程不断判断此标记，如果发现被设定就把它编译成机器码，并将其机器码地址及相关信息放入entry table中，下次执行到此就跳到机器码段执行，而不再解释执行，从而提高速度”。</p>
+<p>&emsp;&emsp;JIT是Dalvik虚拟机下的编译模式，随着ART在4.4版本之后替代Dalvik，编译模式也由JIT变为了AOT（4.4版本JIT）。</p>
+<p>小结：</p>
+<ul>
+<li>Dalvik从android诞生时就存在，4.4版本之后被ART替代</li>
+<li>JIT在android 2.2版本被引入，4.4版本之后被AOT替代</li>
+<li>JIT只是对热点函数、热点trace进行编译，非热点函数还是走解释器</li>
+<li>JIT编译生成的机器码存储在内存中，应用下次启动时需重新编译热点代码</li>
+</ul>
+<h5 id="emsp-emsp-什么是AOT？"><a href="#emsp-emsp-什么是AOT？" class="headerlink" title="&emsp;&emsp;什么是AOT？"></a>&emsp;&emsp;什么是AOT？</h5><p>&emsp;&emsp;AOT，即“Ahead Of Time”，翻译过来就是“预编译”。这个技术在4.4版本上就可以使用了，是ART的编译模式。为什么叫“预编译”？因为它是在应用安装时就将字节码编译成了机器码然后存放在本地（可以理解为“硬盘”）了。这样程序运行时就可以直接从本地取到机器码然后执行，大大提高了代码的执行效率。</p>
+<p>&emsp;&emsp;JIT会在程序运行期间进行编译，执行效率并没有理论上那么高。而AOT直接在应用安装时就编译了，无需在程序运行期间编译，这是AOT的一个优势。但它也有弊端，比如说应用安装时就编译，会导致应用包安装的时间变长；编译的机器码存到了本地，就会导致应用占用的本地存储空间多了代码包的20%左右。</p>
+<p>&emsp;&emsp;AOT作为默认的编译模式，也只是在android 5.x、6.x版本，7.0版本开始使用混合模式。</p>
+<p>小结：</p>
+<ul>
+<li>AOT，是在应用安装时编译，优点是省去了在程序运行期间的编译时间，提高了代码的执行效率</li>
+<li>AOT，也印在应用安装时编译，延长了应用的安装时间，增大了本地存储空间的占用</li>
+<li>AOT作为默认编译模式，只存在于android 5.x、6.x版本</li>
+</ul>
+<h5 id="emsp-emsp-android-7-0及之后的编译模式是怎样的？"><a href="#emsp-emsp-android-7-0及之后的编译模式是怎样的？" class="headerlink" title="&emsp;&emsp;android 7.0及之后的编译模式是怎样的？"></a>&emsp;&emsp;android 7.0及之后的编译模式是怎样的？</h5><p>&emsp;&emsp;7.0版本采用的是hybird的模式，也就是JIT+AOT+解释器的结合。应用安装时不再编译，直接安装。代码执行时采用JIT的方式，对于热点trace和热点代码进行编译并产生profile文件，但这种JIT产生的编译不是持久化的。当手机进入空置或者充电状态时，系统隔一段时间就扫描一下app的profile文件，基于此profile文件制定的热点trace或者热点代码进行编译并进行持久化处理。待应用再次运行时，如本地有相关机器码，就直接运行本地的机器码而不再进行JIT编译。</p>
+<p>&emsp;&emsp;此处的AOT，不再指“Ahead Of Time”，而是指“All Of the Time”。</p>
+<p>&emsp;&emsp;这种混合模式的好处是，因为不再进行安装时编译，安装会变得很快；在空置或充电等状态下进行了编译，编译过的热点代码或热点trace不会再进行重复编译，执行效率也会提升。缺点是，应用前几次代码执行，效率可能一般；用户操作应用的次数越多，这种代码执行的效率越明显。</p>
+<h3 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h3><ul>
+<li><a href="http://blog.csdn.net/u011326979/article/details/50748181" target="_blank" rel="noopener">http://blog.csdn.net/u011326979/article/details/50748181</a></li>
+<li><a href="http://blog.csdn.net/wangtaomtk/article/details/52264189" target="_blank" rel="noopener">http://blog.csdn.net/wangtaomtk/article/details/52264189</a></li>
+<li><a href="http://blog.csdn.net/wbw1985/article/details/19076705" target="_blank" rel="noopener">http://blog.csdn.net/wbw1985/article/details/19076705</a></li>
+<li><a href="http://www.infoq.com/cn/news/2016/04/android-n-aot-jit#" target="_blank" rel="noopener">http://www.infoq.com/cn/news/2016/04/android-n-aot-jit#</a></li>
+<li><a href="https://www.zhihu.com/question/55652975" target="_blank" rel="noopener">https://www.zhihu.com/question/55652975</a></li>
 </ul>
 
       
@@ -424,8 +444,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/20/java-synchronized的初步理解/" rel="next" title="java synchronized的初步理解">
-                <i class="fa fa-chevron-left"></i> java synchronized的初步理解
+              <a href="/2017/12/19/一些“跳过”按钮及缓冲框示例/" rel="next" title="一些“跳过”按钮及缓冲框示例">
+                <i class="fa fa-chevron-left"></i> 一些“跳过”按钮及缓冲框示例
               </a>
             
           </div>
@@ -433,10 +453,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/28/android笔记之Window/" rel="prev" title="android笔记之Window">
-                android笔记之Window <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -586,7 +602,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考资料："><span class="nav-number">1.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-什么是JIT"><span class="nav-number">2.0.1.</span> <span class="nav-text">  什么是JIT ?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-什么是AOT？"><span class="nav-number">2.0.2.</span> <span class="nav-text">  什么是AOT？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emsp-emsp-android-7-0及之后的编译模式是怎样的？"><span class="nav-number">2.0.3.</span> <span class="nav-text">  android 7.0及之后的编译模式是怎样的？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料："><span class="nav-number">3.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
             
 
           </div>
