@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言&amp;emsp;&amp;emsp;平时在开发中接触过许多的注解，如@Override，@Nullable等，但自己代码中还没怎么用过。所以，就想着学习学习，然后用一下。 什么是注解？&amp;emsp;&amp;emsp;注解是一种将元数据与程序元素关联在一起的安全的类似注释的机制。那什么是元数据？元数据就是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android 注解初步理解">
+<meta property="og:url" content="http://yizhanzjz.com/2018/01/03/android-注解初步理解/index.html">
+<meta property="og:site_name" content="yizhanzjz&#39;s blogs">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;平时在开发中接触过许多的注解，如@Override，@Nullable等，但自己代码中还没怎么用过。所以，就想着学习学习，然后用一下。 什么是注解？&amp;emsp;&amp;emsp;注解是一种将元数据与程序元素关联在一起的安全的类似注释的机制。那什么是元数据？元数据就是描述数据的数据，比如下面的代码，toString方法是数据，@Override就是描述toString方法的元数">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-01-03T07:59:44.304Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android 注解初步理解">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;平时在开发中接触过许多的注解，如@Override，@Nullable等，但自己代码中还没怎么用过。所以，就想着学习学习，然后用一下。 什么是注解？&amp;emsp;&amp;emsp;注解是一种将元数据与程序元素关联在一起的安全的类似注释的机制。那什么是元数据？元数据就是描述数据的数据，比如下面的代码，toString方法是数据，@Override就是描述toString方法的元数">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'C2MU51E4BQ',
+      apiKey: '0aeb872e9023272e0e75879918f98dc6',
+      indexName: 'blog_search',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"输入关键字进行搜索","hits_empty":"找不到关于 ${query} 的文章","hits_stats":"共找到 ${hits} 篇文章，花了 ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yizhanzjz.com/2018/01/03/android-注解初步理解/"/>
+
+
+
+
+
+  <title>android 注解初步理解 | yizhanzjz's blogs</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">yizhanzjz's blogs</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">study.practise.years of it.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yizhanzjz.com/2018/01/03/android-注解初步理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yizhanzjz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yizhanzjz's blogs">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">android 注解初步理解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-03T15:59:06+08:00">
+                2018-01-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/01/03/android-注解初步理解/" class="leancloud_visitors" data-flag-title="android 注解初步理解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>&emsp;&emsp;平时在开发中接触过许多的注解，如@Override，@Nullable等，但自己代码中还没怎么用过。所以，就想着学习学习，然后用一下。</p>
+<h3 id="什么是注解？"><a href="#什么是注解？" class="headerlink" title="什么是注解？"></a>什么是注解？</h3><p>&emsp;&emsp;注解是一种将元数据与程序元素关联在一起的安全的类似注释的机制。那什么是元数据？元数据就是描述数据的数据，比如下面的代码，toString方法是数据，@Override就是描述toString方法的元数据。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public String toString() &#123;</span><br><span class="line">    return super.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;那程序元素都是指哪些呢？除了上面示例中说的方法，还可以是指类、变量、方法参数、构造方法以及包声明（用于对包声明进行说明的注解，我见的不多）。</p>
+<h3 id="注解的作用"><a href="#注解的作用" class="headerlink" title="注解的作用"></a>注解的作用</h3><p>&emsp;&emsp;上面说了，注解是可以与程序元素进行关联，也可以对程序元素进行描述（注意，这里说的描述可不仅仅是指对程序元素进行说明，也会对程序元素有约束作用）。那有这些能力具体有什么用呢？首先，它可以用来生成文档，一般我们在写方法注释时，可能会在其中引入一些其它的类、方法、成员变量等进行说明，这时候会用到@link，也可能会对方法的参数、返回值类型进行说明，这就用到了@param和@return。比如handler的某个obtainMessage方法，其注释时如下这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * </span><br><span class="line"> * Same as &#123;@link #obtainMessage()&#125;, except that it also sets the what and obj members </span><br><span class="line"> * of the returned Message.</span><br><span class="line"> * </span><br><span class="line"> * @param what Value to assign to the returned Message.what field.</span><br><span class="line"> * @param obj Value to assign to the returned Message.obj field.</span><br><span class="line"> * @return A Message from the global message pool.</span><br><span class="line"> */</span><br><span class="line"> public final Message obtainMessage(int what, Object obj)&#123;</span><br><span class="line">     ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;这个注释就包含了对注解如@link，@param，@return的使用。注解的另一个作用是，“跟踪代码的依赖性，实现替代配置文件的功能”。比如说某个字段使用了注解，就可将其实例化的对象赋值给它，或者将android布局文件中的view对象赋值给它。还有一个作用就比较简单了，就是配合编译器在编译阶段对代码的检查，比如@Override，父类及其祖类如果没有此方法而子类的方法使用了该注解，编译器就会报错了。</p>
+<p>&emsp;&emsp;其实，用于描述数据的元数据可以使用注解的形式，也可以使用xml的形式。xml可以做到配置分离，即代码和配置文件分开，比较适合给应用设置很多的常量或参数；而注解是紧耦合的，当需要元数据与代码紧密耦合在一起时使用注解就比较好。java中的一个示例，把某个方法声明为服务，使用注解就比较好。另外，元数据使用xml形式有可能由于其配置分离的不耦合或松耦合导致xml文件过多难于维护，使用注解就可以有效避免这个问题。</p>
+<h3 id="什么是元注解？"><a href="#什么是元注解？" class="headerlink" title="什么是元注解？"></a>什么是元注解？</h3><p>&emsp;&emsp;上面说的是注解及其作用，而注解是怎么定的呢？这就要先了解一下元注解。所谓“元注解”，其实就是用于定义注解的注解。java总共给出了我们4种元注解：</p>
+<ul>
+<li>@Documented，注解是否将包含在javaDoc中</li>
+<li>@Retention，什么时候使用该注解</li>
+<li>@Target，注解用于什么地方</li>
+<li>@Inherited，是否允许子类继承该注解</li>
+</ul>
+<p>&emsp;&emsp;@Documented，是否将注解信息添加到java文档中；</p>
+<p>&emsp;&emsp;@Retention，定义注解的生命周期的。有三个取值：</p>
+<ul>
+<li>RetentionPolicy.SOURCE，这个值表示的是此注解在源码阶段使用，在代码编译阶段就被丢弃了，不会被写到字节码中。示例就是@Override，@SuppressWarnings。</li>
+<li>RetentionPolicy.CLASS，这种注解会被写到字节码中，在字节码阶段使用，在类加载器时丢弃，也就是说字节码文件被加载进内存之后的Class对象通过反射是不能获取到此注解的。比较重要的一点，如果定义注解时没有使用@Retention，那默认就是这种CLASS类型的。</li>
+<li>RetentionPolicy.RUNTIME，在程序运行阶段使用，即便是字节码加载进内存之后的Class对象也会有该注解，通过反射也会获取到此注解，这种注解就是一直存在着的。需要注意的一点是，一般我们自己写的自定义注解需要设置成这个值。</li>
+</ul>
+<p>&emsp;&emsp;@Target，表示注解作用于程序的哪个元素（类，成员变量，构造方法，方法，方法参数，局部变量，包声明）。一般的取值有下面这么多，定义注解但不使用@Target，那就表明这个注解可以作用在任何程序元素上。（后面会发现，还有注解类型等）</p>
+<ul>
+<li>ElementType.TYPE，作用目标为类、接口、enum声明；</li>
+<li>ElementType.FIELD，作用于成员变量（包括enum实例）；</li>
+<li>ElementType.CONSTRUCTOR，作用于构造方法；</li>
+<li>ElementType.METHOD，作用于方法；</li>
+<li>ElementType.PARAMETER，作用于方法参数；</li>
+<li>ElementType.LOCAL_VARIABLE，作用于局部变量；</li>
+<li>ElementType.PACKAGE，作用于包声明；</li>
+</ul>
+<p>&emsp;&emsp;@Inherited，使用了@Inherited的注解不仅作用于当前该程序元素，还会作用于继承或重写该程序元素的子程序元素。比如说，使用了@Inherited的某注解是作用于类的，那么此注解也会约束到该类的子类。</p>
+<h3 id="注解是怎么定义呢？"><a href="#注解是怎么定义呢？" class="headerlink" title="注解是怎么定义呢？"></a>注解是怎么定义呢？</h3><p>&emsp;&emsp;上面主要说的是，定义注解的注解-元注解。那一般一个注解是怎么定义的呢？以@Override为例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">package java.lang;</span><br><span class="line"></span><br><span class="line">import java.lang.annotation.*;</span><br><span class="line"></span><br><span class="line">@Target(ElementType.METHOD)</span><br><span class="line">@Retention(RetentionPolicy.SOURCE)</span><br><span class="line">public @interface Override &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;@Target的取值是ElementType.METHOD，说明此注解是作用于类中方法上的；@Retention的取值是RetentionPolicy.SOURCE，说明此注解在源码阶段使用，在编译阶段就会被丢弃。使用@interface定义了一个注解，但注解的内容却啥都没有。那它是怎么去校验当前类的父类及祖类有没有声明此方法的？这个校验的具体实现在哪里呢？这里要说的是，注解元数据与业务逻辑是无关的，它本身在声明时定义属性信息（类、方法、包、域），在被使用时给这些属性信息赋值，而拿到这个注解及其属性信息并进行一些逻辑操作的是另一些代码。这样说，有些抽象。拿一个别人的例子来讲吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Target(ElementType.METHOD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@interface Todo &#123;</span><br><span class="line">    //这两个枚举是提供常量值的，下面那三个是注解的方法，自带默认值</span><br><span class="line">    public enum Priority &#123;LOW, MEDIUM, HIGH&#125;</span><br><span class="line">    public enum Status &#123;STARTED, NOT_STARTED&#125;</span><br><span class="line">    </span><br><span class="line">    String author() default &quot;Yash&quot;;</span><br><span class="line">    Priority priority() default Priority.LOW;</span><br><span class="line">    Status status() default Status.NOT_STARTED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;上面是一个自定义注解的声明，作用于方法，运行期间也一直都会存在，然后其中定义了一些属性：author、priority、status（3个带默认值的方法）。下面这段代码是对上述自定义注解的使用，也就是给属性赋值的阶段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//以此给注解的各属性赋值</span><br><span class="line">@Todo(priority = Todo.Priority.MEDIUM, author = &quot;Yashwant&quot;, status = Todo.Status.STARTED)</span><br><span class="line">public void incompleteMethod1() &#123;</span><br><span class="line">//Some business logic is written</span><br><span class="line">//But it’s not complete yet</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;我们可以通过反射的方式对这些注解属性值进行使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//这个类是使用了@Todo注解的方法所在的类</span><br><span class="line">Class businessLogicClass = BusinessLogic.class;</span><br><span class="line">//获取此类中的可访问到的方法并进行遍历</span><br><span class="line">for(Method method : businessLogicClass.getMethods()) &#123;</span><br><span class="line">    //当前遍历到的此方法是否有Todo这个注解，有此注解就输出一些信息</span><br><span class="line">    Todo todoAnnotation = (Todo)method.getAnnotation(Todo.class);</span><br><span class="line">    if(todoAnnotation != null) &#123;</span><br><span class="line">        System.out.println(&quot; Method Name : &quot; + method.getName());</span><br><span class="line">        //调用了注解的各个方法</span><br><span class="line">        System.out.println(&quot; Author : &quot; + todoAnnotation.author());</span><br><span class="line">        System.out.println(&quot; Priority : &quot; + todoAnnotation.priority());</span><br><span class="line">        System.out.println(&quot; Status : &quot; + todoAnnotation.status());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;说明几点：在反射获取此注解时，注解的表现就像一个正常的类，有Todo.class，也有Todo类型；获取方法的注解使用的是Method的getAnnotation方法；原来注解中声明的方法，在获取了注解对象后直接注解对象.声明的方法就可以调用得到。</p>
+<p>&emsp;&emsp;继续回到上述问题：@Override校验当前类的父类及祖类有没有声明此方法的具体代码在哪里？上面的代码，Todo注解是我们自定义的，被使用的具体实现也是在我们自己写的代码，而@Override这样的注解，是java本来就有的，在编译阶段丢弃，在编译（javac）阶段之前使用，那么基本可以猜测，其具体实现是由jdk或jre的某一部分来实现的（这是废话，只是目前我也不能确定具体是哪部分）。另外，注解一般是跟编译器配合做出警告提示的，这里面可能就涉及到编译器和jdk或jre的交互了（又是猜的）。</p>
+<h3 id="自定义注解在使用时还需注意的点"><a href="#自定义注解在使用时还需注意的点" class="headerlink" title="自定义注解在使用时还需注意的点"></a>自定义注解在使用时还需注意的点</h3><p>&emsp;&emsp;怎么定义一个注解？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public @interface 注解名 &#123;定义体&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;使用@interface声明注解时，就自动继承了java.lang.annotation.Annotation接口，其它的细节会由编译器去完成。</p>
+<p>&emsp;&emsp;注解属性都支持哪些类型呢？</p>
+<ul>
+<li>所有基本数据类型（int,float,boolean,byte,double,char,long,short)</li>
+<li>String</li>
+<li>Class（获取Class对象）</li>
+<li>enum</li>
+<li>Annotation（注解类型）</li>
+<li>以上所有类型的数组类型</li>
+</ul>
+<p>&emsp;&emsp;另外，注解属性只能使用public和default两个修饰符，另外当某注解只定义了一个属性时，最好使用下面的参数声明和使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//定义只有一个属性的注解</span><br><span class="line">@interface Author&#123;</span><br><span class="line">    String value();</span><br><span class="line">&#125;</span><br><span class="line">//使用此注解</span><br><span class="line">@Author(&quot;Yashwant&quot;)</span><br><span class="line">public void someMethod() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="android中的注解库是什么？常见的注解都有哪些？"><a href="#android中的注解库是什么？常见的注解都有哪些？" class="headerlink" title="android中的注解库是什么？常见的注解都有哪些？"></a>android中的注解库是什么？常见的注解都有哪些？</h3><p>&emsp;&emsp;android的注解库就是support annotations，是从support Library 19.1版本开始引入的。其中的注解大致可分为下面几类：</p>
+<ul>
+<li>Nullness注解</li>
+<li>资源类型注解</li>
+<li>Typedef注解</li>
+<li>Value Constraints注解</li>
+<li>线程相关注解</li>
+<li>颜色注解</li>
+<li>权限注解</li>
+<li>覆写方法注解</li>
+<li>返回值注解</li>
+<li>其它一些注解</li>
+</ul>
+<p>&emsp;&emsp;下面逐一对上述分类进行说明：</p>
+<h4 id="emsp-emsp-Nullness注解"><a href="#emsp-emsp-Nullness注解" class="headerlink" title="&emsp;&emsp;Nullness注解"></a>&emsp;&emsp;Nullness注解</h4><p>&emsp;&emsp;这个类型的注解有两个：@Nullable和@NonNull。前者表示目标程序元素可为空，后者表示目标程序元素不能为空。它们的作用范围是一样的，都可作用于方法、方法参数、成员变量、局部变量、注解、包声明。如果传入参数不合法，就会报出警告提示。</p>
+<p>&emsp;&emsp;这类注解很好理解，就是用来限制目标程序元素是否可传空的。</p>
+<h4 id="emsp-emsp-资源类型注解"><a href="#emsp-emsp-资源类型注解" class="headerlink" title="&emsp;&emsp;资源类型注解"></a>&emsp;&emsp;资源类型注解</h4><p>&emsp;&emsp;这里说的资源是app中诸如字符串、style、layout、drawable等资源，它们向程序代码引用它们的地方提供的是整数，R.string.xxx的值为整数，R.style.yyy的值也为整数，这样就可能向需要R.string.xxx的地方提供了R.style.yyy造成错误。为了避免这种错误，我们可以对引用资源处的参数添加资源类型注解，这样该传递style整数的只能穿style整数，否则编译器会报错。因为资源类型有很多种，所以资源类型的注解也有很多种，共22种。</p>
+<ul>
+<li>AnimatorRes：animator资源类型</li>
+<li>AnimRes：ani资源类型</li>
+<li>AnyRes：任意资源类型</li>
+<li>ArrayRes：array资源类型</li>
+<li>AttrRes：attr资源类型</li>
+<li>BoolRes：boolean资源类型</li>
+<li>ColorRes：color资源类型</li>
+<li>DimenRes：dimen资源类型</li>
+<li>DrawableRes：drawable资源类型</li>
+<li>FractionRes：fraction资源类型</li>
+<li>IdRes：id资源类型</li>
+<li>IntegerRes：integer资源类型</li>
+<li>InterpolatorRes：interpolator资源类型</li>
+<li>LayoutRes：layout资源类型</li>
+<li>MenuRes：menu资源类型</li>
+<li>PluralsRes：plural资源类型</li>
+<li>RawRes：raw资源类型</li>
+<li>StringRes：string资源类型</li>
+<li>StyleableRes：styleable资源类型</li>
+<li>StyleRes：style资源类型</li>
+<li>TransitionRes：transition资源类型</li>
+<li>XmlRes：xml资源类型</li>
+</ul>
+<p>&emsp;&emsp;各种各样的注解，用来标注各种各样的资源类型。注解标注了某参数，那么该参数就只能接受该资源类型的参数，否则编译器就会报错。另外，需要说的一点是，资源类型的目标程序元素一般是方法、方法参数、成员变量、局部变量。</p>
+<p>&emsp;&emsp;资源类型注解，主要作用是约束传入资源的类型的，指定了该类型就只能传入该类型的资源进来。</p>
+<h4 id="emsp-emsp-Typedef注解"><a href="#emsp-emsp-Typedef注解" class="headerlink" title="&emsp;&emsp;Typedef注解"></a>&emsp;&emsp;Typedef注解</h4><p>&emsp;&emsp;这种类型的注解有两种：@IntDef和@StringDef。这两个注解可以用来定义另一个注解，定义时提供一个常量列表，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private final static int GET=0;</span><br><span class="line">private final static int POST=1;</span><br><span class="line">private final static int DELETE=2;</span><br><span class="line">private final static int PUT=3;</span><br><span class="line">@IntDef(&#123;GET, POST, DELETE,PUT&#125;)</span><br><span class="line">@Retention(RetentionPolicy.SOURCE)</span><br><span class="line">public @interface ReqType&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;上述代码只拿@IntDef来举例，定义好的注解@ReqType作用到目标程序元素时，目标程序元素就只能接受GET、POST、DELETE、PUT中的某个值。@StringDef与@IntDef的使用时类似的，这里不再多说。</p>
+<p>&emsp;&emsp;Typedef注解的主要作用是，约束目标程序元素接受的值，只允许几个允许的常量传给目标程序元素。</p>
+<h4 id="emsp-emsp-Value-Constraints注解"><a href="#emsp-emsp-Value-Constraints注解" class="headerlink" title="&emsp;&emsp;Value Constraints注解"></a>&emsp;&emsp;Value Constraints注解</h4><p>&emsp;&emsp;可以翻译成“值约束注解”，这种类型的注解有三种@Size、@IntRange和@FloatRange。</p>
+<ul>
+<li>@Size，限制集合或字符串的长度或大小</li>
+<li>@IntRange，限制目标程序元素的取值范围（整数）</li>
+<li>@FloatRange，限制目标程序元素的取值范围（浮点数）</li>
+</ul>
+<p>&emsp;&emsp;@Size(min=1)，表示集合或者字符串的最小长度不能为空；@Size(max=10)，表示集合或者字符串的最大长度不能长于10；@Size(5)，表示集合或者字符串的长度只能为5；@Size(multiple=2)，表示集合或者字符串的长度必须是2的倍数。另外，括号内的内容，可以组合使用。比如@Size(min = 2, max = 3)，表示集合或者字符串的长度最小为2，最大为3.</p>
+<p>&emsp;&emsp;@IntRange与@FloatRange的使用方法类似，这里只拿@IntRange举例。@IntRange(from = 2, to = 10)，表示被作用的目标程序元素的取值只能为2-10之间的整数（包含2，10）。</p>
+<p>&emsp;&emsp;@Size的主要作用是，限制目标集合或者字符串的长度或大小；@IntRange和@FloatRange，限制目标程序元素的取值在一个范围内。</p>
+<h4 id="emsp-emsp-线程相关注解"><a href="#emsp-emsp-线程相关注解" class="headerlink" title="&emsp;&emsp;线程相关注解"></a>&emsp;&emsp;线程相关注解</h4><p>&emsp;&emsp;这类注解总共有4个：@UiThread、@MainThread、@WorkerThread、@BinderThread。这4个注解的作用范围都是为类、构造方法、方法。它们含义如下：</p>
+<ul>
+<li>@UiThread，要求作用的目标程序元素要运行在UI线程中；</li>
+<li>@MainThread，要求作用的目标程序元素要运行在主线程中；</li>
+<li>@WorkerThread，要求作用的目标程序元素要运行在子线程中；</li>
+<li>@BinderThread，要求作用的目标程序元素要运行在binder线程中。</li>
+</ul>
+<p>&emsp;&emsp;经查资料，UI线程和主线程在android上是同一个概念。所以，@UiThread与@MainThread的作用应该是一样的。@WorkerThread是运行在子线程中，这个好理解，方法或者类要运行在子线程中才可以。@BinderThread，要求方法或类运行在binder线程中。关于binder线程的理解，我们知道app进程用来接收从AMS传递过来的信息的ApplicationThread就是运行在Binder线程的，主线程进入无限循环时，给主线程发消息唤醒主线程处理消息的很多都是Binder线程。有些方法或者类存在的意义就是为了服务Binder线程，这些方法和类就可以使用注解@BinderThread。</p>
+<p>&emsp;&emsp;线程相关的注解就是为了约束程序执行在哪个线程的。</p>
+<h4 id="emsp-emsp-颜色注解"><a href="#emsp-emsp-颜色注解" class="headerlink" title="&emsp;&emsp;颜色注解"></a>&emsp;&emsp;颜色注解</h4><p>&emsp;&emsp;这类注解有一个：@ColorInt。这个意思是，有时候我们的方法需要的一个颜色值（是一个整型值），而不是资源颜色值，这时候就可用此注解。</p>
+<p>&emsp;&emsp;@ColorInt的主要作用就是约束目标程序元素只接收颜色值。</p>
+<h4 id="emsp-emsp-权限注解"><a href="#emsp-emsp-权限注解" class="headerlink" title="&emsp;&emsp;权限注解"></a>&emsp;&emsp;权限注解</h4><p>&emsp;&emsp;这类注解有一个：@RequiresPermission。有些方法我们需要调用方取得了某种权限之后才能调用。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@RequiresPermission(Manifest.permission.SET_WALLPAPER)</span><br><span class="line">public abstract void setWallpaper(Bitmap bitmap) throws IOException;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;上面这段代码的意思是，setWallpaper方法需要调用方取得SET_WALLPAPER权限后才能够调用。如果被调用方法是要求几种权限中的至少一种，可以像下面这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@RequiresPermission(anyOf = &#123;</span><br><span class="line">    Manifest.permission.ACCESS_COARSE_LOCATION,</span><br><span class="line">    Manifest.permission.ACCESS_FINE_LOCATION&#125;)</span><br><span class="line">public abstract Location getLastKnownLocation(String provider);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;如果被调用方法是要求全部几种权限，则可以像下面这样写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@RequiresPermission(allOf = &#123;</span><br><span class="line">    Manifest.permission.READ_HISTORY_BOOKMARKS, </span><br><span class="line">    Manifest.permission.WRITE_HISTORY_BOOKMARKS&#125;)</span><br><span class="line">public static final void updateVisitedHistory(ContentResolver cr, String url, boolean real) ;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;@RequiresPermission也可以作用到字段上，表示使用此字段需要获取什么权限。比如Intent常量字符串字段<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@RequiresPermission(android.Manifest.permission.BLUETOOTH)</span><br><span class="line">public static final String ACTION_REQUEST_DISCOVERABLE =</span><br><span class="line">            &quot;android.bluetooth.adapter.action.REQUEST_DISCOVERABLE&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;@RequiresPermission对字段的作用可以进一步扩展，可以做到对此字段的读写分别设定相应权限才能访问。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@RequiresPermission.Read(@RequiresPermission(READ_HISTORY_BOOKMARKS))</span><br><span class="line">@RequiresPermission.Write(@RequiresPermission(WRITE_HISTORY_BOOKMARKS))</span><br><span class="line">public static final Uri BOOKMARKS_URI = Uri.parse(&quot;content://browser/bookmarks&quot;);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;权限注解的主要作用是约束程序中的调用方对所调方法、所调字段、所调方法参数的访问，有权限才能访问，无权限不能访问。</p>
+<h4 id="emsp-emsp-覆写方法注解"><a href="#emsp-emsp-覆写方法注解" class="headerlink" title="&emsp;&emsp;覆写方法注解"></a>&emsp;&emsp;覆写方法注解</h4><p>&emsp;&emsp;这类注解也是有一个：@CallSuper。如果父类的方法需要子类去调用，那可以在父类方法上使用此注解。子类如果没在覆写方法中调用父类编译器就会报错。</p>
+<p>&emsp;&emsp;覆写方法注解的主要作用是约束子类的方法必须调用父类父方法。</p>
+<h4 id="emsp-emsp-返回值注解"><a href="#emsp-emsp-返回值注解" class="headerlink" title="&emsp;&emsp;返回值注解"></a>&emsp;&emsp;返回值注解</h4><p>&emsp;&emsp;返回值注解也是有一个：@CheckResult。你写了一个方法，你要求调用此方法的调用方必须要使用该方法的返回值，不使用就报错，那你可以使用此@CheckResult注解。</p>
+<p>&emsp;&emsp;返回值注解，主要作用是约束调用方必须使用方法的返回值。</p>
+<h4 id="emsp-emsp-其他注解"><a href="#emsp-emsp-其他注解" class="headerlink" title="&emsp;&emsp;其他注解"></a>&emsp;&emsp;其他注解</h4><p>&emsp;&emsp;@Keep，在混淆时，使用此注解的方法应该被保留；@Keep，在混淆时，使用此注解的方法应该被保留；@VisibleForTesting，使类、方法、方法变量拥有更多的可见性，以便于测试。</p>
+<h3 id="常见的注解说明"><a href="#常见的注解说明" class="headerlink" title="常见的注解说明"></a>常见的注解说明</h3><h4 id="emsp-emsp-Override"><a href="#emsp-emsp-Override" class="headerlink" title="&emsp;&emsp;@Override"></a>&emsp;&emsp;@Override</h4><p>&emsp;&emsp;java.lang.Override是一个标记类型注解，它被用作标注方法。它说明了被标注的方法重载了父类的方法，起到了断言的作用。如果我们使用了这种注解在一个没有覆盖父类方法的方法时，java编译器将以一个编译错误来警示</p>
+<p>&emsp;&emsp;@Override，简单来说，就是用来表明当前的方法是从父类方法中覆写而来的。</p>
+<h4 id="emsp-emsp-Deprecated"><a href="#emsp-emsp-Deprecated" class="headerlink" title="&emsp;&emsp;@Deprecated"></a>&emsp;&emsp;@Deprecated</h4><p>&emsp;&emsp;Deprecated也是一种标记类型注解。当一个类型或者类型成员使用@Deprecated修饰的话，编译器将不鼓励使用这个被标注的程序元素。所以使用这种修饰具有一定的“延续性”：如果我们在代码中通过继承或者覆盖的方式使用了这个过时的类型或者成员，虽然继承或者覆盖后的类型或者成员并不是被声明为@Deprecated，但编译器仍然要报警</p>
+<p>&emsp;&emsp;@Deprecated，简单来说，标注某个方法或字段已经过时了，以后不要再用了。</p>
+<h4 id="emsp-emsp-SuppressWarnings"><a href="#emsp-emsp-SuppressWarnings" class="headerlink" title="&emsp;&emsp;@SuppressWarnings"></a>&emsp;&emsp;@SuppressWarnings</h4><p>&emsp;&emsp;SuppressWarning不是一个标记类型注解。它有一个类型为String[]的成员，这个成员的值为被禁止的警告名。对于javac编译器来讲，被-Xlint选项有效的警告名也同样对@SuppressWarings有效，同时编译器忽略掉无法识别的警告名<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@SuppressWarnings(&quot;unchecked&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;@SuppressWarnings，简单来说就是用来屏蔽某些警告的。</p>
+<h4 id="emsp-emsp-TargetApi-Build-VERSION-CODES-XX"><a href="#emsp-emsp-TargetApi-Build-VERSION-CODES-XX" class="headerlink" title="&emsp;&emsp;@TargetApi (Build.VERSION_CODES.XX)"></a>&emsp;&emsp;@TargetApi (Build.VERSION_CODES.XX)</h4><p>&emsp;&emsp;用于屏蔽某一新api中才能使用的方法报的lint检查出现的错误。简单来说，@TargetApi是给使用了此注解的方法添加访问权限，跟上面说的@RequiresPermission有点儿类似。</p>
+<h4 id="emsp-emsp-SuppressLint-“NewApi”"><a href="#emsp-emsp-SuppressLint-“NewApi”" class="headerlink" title="&emsp;&emsp;@SuppressLint(“NewApi”)"></a>&emsp;&emsp;@SuppressLint(“NewApi”)</h4><p>&emsp;&emsp;屏蔽一切新api中才能使用的方法报的android lint错误。简单来说，应用中最低sdk版本不能使用的api会报lint错误，使用此注解，可以使它不报这个错误。</p>
+<h4 id="emsp-emsp-SdkConstant"><a href="#emsp-emsp-SdkConstant" class="headerlink" title="&emsp;&emsp;@SdkConstant"></a>&emsp;&emsp;@SdkConstant</h4><p>&emsp;&emsp;表示一个常量字段应该被输出在SDK工具中使用，例如，添加一个自定义的Action<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)   </span><br><span class="line">public static final String ACTION_MY_TEST = &quot;android.intent.action.MY_TEST&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;然后这么使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent myTest = new Intent(Intent.ACTION_MY_TEST);   </span><br><span class="line">mContext.sendBroadcast(myTest);</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;这个用的少，感觉不太重要。</p>
+<h4 id="emsp-emsp-Widget"><a href="#emsp-emsp-Widget" class="headerlink" title="&emsp;&emsp;@Widget"></a>&emsp;&emsp;@Widget</h4><p>&emsp;&emsp;用于类的注解，表示该类是自定义的Widget类</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>&emsp;&emsp;一开始，对注解的理解是将元数据与程序元素关联在一起进行或约束或说明的机制。后来的理解更具体，注解是通过元数据定义属性信息，在使用此注解时给这些属性信息赋值，然后通过某种方式（比如反射）使用这些属性信息做操作的机制。</p>
+<p>&emsp;&emsp;android本身有注解库：support annotation，它里面有Nullness注解，可以约束目标程序元素可空或不可为空；有资源类型注解，可以约束目标程序元素只能传递某种资源类型的整数；有Typedef注解，可以修饰其它注解，约束目标程序元素只能接受规定的几个整数或字符串中的某一个值；有Value Constraints注解，可以约束目标集合或目标字符串的长度，或约束目标程序元素只能接受在一个整数范围或浮点数范围内的值；有线程相关注解，可以约束目标程序元素只能运行在主线程、子线程或binder线程内；有权限注解，可以约束调用目标程序元素的调用方要具备某种权限才能进行调用访问；有覆写方法注解，要求子类覆写方法必须在其方法内调用父类的该父方法；有返回值注解，要求调用某方法的调用方必须使用该方法的返回值等等。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>&emsp;&emsp;<a href="http://www.importnew.com/10294.html" target="_blank" rel="noopener">Java中的注解是如何工作的？</a></p>
+<p>&emsp;&emsp;<a href="http://www.cnblogs.com/whoislcj/p/5671622.html" target="_blank" rel="noopener">Java学习之注解Annotation实现原理</a></p>
+<p>&emsp;&emsp;<a href="https://www.cnblogs.com/peida/archive/2013/04/24/3036689.html" target="_blank" rel="noopener">深入理解Java：注解（Annotation）自定义注解入门</a></p>
+<p>&emsp;&emsp;<a href="http://blog.csdn.net/qq_21793463/article/details/52215812" target="_blank" rel="noopener">使用Android Support Annotations优化你的代码</a></p>
+<p>&emsp;&emsp;<a href="http://blog.csdn.net/maosidiaoxian/article/details/50452706" target="_blank" rel="noopener">Android Support库——support annotations</a></p>
+<p>&emsp;&emsp;<a href="http://www.cnblogs.com/whoislcj/p/5677917.html" target="_blank" rel="noopener">Android注解使用之使用Support Annotations注解优化代码</a></p>
+<p>&emsp;&emsp;<a href="http://blog.csdn.net/johnwcheung/article/details/70230007" target="_blank" rel="noopener">Android注解简析</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wxpay.jpeg" alt="yizhanzjz 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpeg" alt="yizhanzjz 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/27/java-反射初步理解/" rel="next" title="java 反射初步理解">
+                <i class="fa fa-chevron-left"></i> java 反射初步理解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">yizhanzjz</p>
+              <p class="site-description motion-element" itemprop="description">record and share</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yizhanzjz" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/yizhan_zjz" target="_blank" title="CSDN">
+                    
+                      <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://www.jianshu.com/u/65a7bcbe8377" target="_blank" title="简书">
+                    
+                      <i class="fa fa-fw fa-globe"></i>简书</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是注解？"><span class="nav-number">2.</span> <span class="nav-text">什么是注解？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注解的作用"><span class="nav-number">3.</span> <span class="nav-text">注解的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是元注解？"><span class="nav-number">4.</span> <span class="nav-text">什么是元注解？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注解是怎么定义呢？"><span class="nav-number">5.</span> <span class="nav-text">注解是怎么定义呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义注解在使用时还需注意的点"><span class="nav-number">6.</span> <span class="nav-text">自定义注解在使用时还需注意的点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#android中的注解库是什么？常见的注解都有哪些？"><span class="nav-number">7.</span> <span class="nav-text">android中的注解库是什么？常见的注解都有哪些？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Nullness注解"><span class="nav-number">7.1.</span> <span class="nav-text">  Nullness注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-资源类型注解"><span class="nav-number">7.2.</span> <span class="nav-text">  资源类型注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Typedef注解"><span class="nav-number">7.3.</span> <span class="nav-text">  Typedef注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Value-Constraints注解"><span class="nav-number">7.4.</span> <span class="nav-text">  Value Constraints注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-线程相关注解"><span class="nav-number">7.5.</span> <span class="nav-text">  线程相关注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-颜色注解"><span class="nav-number">7.6.</span> <span class="nav-text">  颜色注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-权限注解"><span class="nav-number">7.7.</span> <span class="nav-text">  权限注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-覆写方法注解"><span class="nav-number">7.8.</span> <span class="nav-text">  覆写方法注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-返回值注解"><span class="nav-number">7.9.</span> <span class="nav-text">  返回值注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-其他注解"><span class="nav-number">7.10.</span> <span class="nav-text">  其他注解</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的注解说明"><span class="nav-number">8.</span> <span class="nav-text">常见的注解说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Override"><span class="nav-number">8.1.</span> <span class="nav-text">  @Override</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Deprecated"><span class="nav-number">8.2.</span> <span class="nav-text">  @Deprecated</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-SuppressWarnings"><span class="nav-number">8.3.</span> <span class="nav-text">  @SuppressWarnings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-TargetApi-Build-VERSION-CODES-XX"><span class="nav-number">8.4.</span> <span class="nav-text">  @TargetApi (Build.VERSION_CODES.XX)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-SuppressLint-“NewApi”"><span class="nav-number">8.5.</span> <span class="nav-text">  @SuppressLint(“NewApi”)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-SdkConstant"><span class="nav-number">8.6.</span> <span class="nav-text">  @SdkConstant</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#emsp-emsp-Widget"><span class="nav-number">8.7.</span> <span class="nav-text">  @Widget</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yizhanzjz</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149085"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.3"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("pw62jY6NNYCsQJWJbKX7zOxN-gzGzoHsz", "Uy7mcCUVspTakGiNp05UnHvj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
